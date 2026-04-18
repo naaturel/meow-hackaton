@@ -106,7 +106,7 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
   align-items: center;
   gap: 12px;
 }
-.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; box-shadow: 0 0 8px rgba(34,197,94,0.6); }
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; animation: dot-pulse 2s ease-in-out infinite; }
 
 .page-subtitle {
   margin: 0;

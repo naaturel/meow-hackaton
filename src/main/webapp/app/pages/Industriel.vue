@@ -107,7 +107,7 @@ const currentFonctionnement = computed(() => buildHistoricalData(fonctionnementD
   align-items: center;
   gap: 12px;
 }
-.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #94a3b8; flex-shrink: 0; box-shadow: 0 0 8px rgba(148,163,184,0.6); }
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; animation: dot-pulse 2s ease-in-out infinite; }
 
 .page-subtitle {
   margin: 0;

@@ -11,7 +11,6 @@
     <nav class="sidebar" :class="{ open: isOpen }">
       <div class="sidebar-header">
         <div class="brand">
-          <span class="brand-icon">⚡</span>
           <span class="brand-name">Dashboard</span>
         </div>
       </div>

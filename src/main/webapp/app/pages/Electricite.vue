@@ -91,7 +91,7 @@ const currentEvolution    = computed(() => buildHistoricalData(evolutionData[p()
 
 .page-header { position: relative; padding: 84px 28px 28px; }
 .page-title { margin: 0 0 4px; font-size: 1.8rem; font-weight: 700; color: #f59e0b; letter-spacing: -0.01em; display: flex; align-items: center; gap: 12px; }
-.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #f59e0b; flex-shrink: 0; box-shadow: 0 0 8px rgba(245,158,11,0.6); }
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; animation: dot-pulse 2s ease-in-out infinite; }
 .page-subtitle { margin: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.45); }
 
 .grid {
