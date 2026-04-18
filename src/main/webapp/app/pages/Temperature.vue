@@ -4,72 +4,189 @@
       <h2 class="page-title">Température</h2>
       <p class="page-subtitle">Relevés thermiques et anomalies</p>
     </div>
-    <div class="kpi-row">
-      <KpiCard label="Température actuelle" value="19" unit="°C" trend="up" status="warn" trendLabel="+3°C vs normale" />
-      <KpiCard label="Zone la plus chaude" value="22" unit="°C" trend="up" status="bad" trendLabel="Zone B — anomalie" />
-      <KpiCard label="Amplitude journalière" value="9" unit="°C" trend="flat" status="neutral" trendLabel="12°C → 21°C" />
-    </div>
-    <div class="grid">
-      <ChartCard title="Température moyenne (°C)" type="line" :data="currentMoyenne" />
-      <ChartCard title="Température par zone (°C)" type="bar" :data="currentZones" />
-      <ChartCard title="Écarts par rapport à la normale" type="bar" :data="currentEcarts" />
-      <ChartCard title="Historique mensuel (°C)" type="line" :data="currentHistorique" />
-    </div>
+
+    <div v-if="loading" class="loading">Chargement des données...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <template v-else>
+      <div class="kpi-row">
+        <KpiCard label="Température actuelle" :value="kpi.current" unit="°C" trend="up" status="warn" :trendLabel="`${kpi.ecartNormale > 0 ? '+' : ''}${kpi.ecartNormale}°C vs normale`" />
+        <KpiCard label="Température max aujourd'hui" :value="kpi.maxToday" unit="°C" trend="up" status="bad" trendLabel="Max du jour" />
+        <KpiCard label="Amplitude journalière" :value="kpi.amplitude" unit="°C" trend="flat" status="neutral" :trendLabel="`${kpi.minToday}°C → ${kpi.maxToday}°C`" />
+      </div>
+      <div class="grid">
+        <ChartCard title="Température moyenne (°C)" type="line" :data="currentMoyenne" />
+        <ChartCard title="Température Max/Min (°C)" type="bar" :data="currentZones" />
+        <ChartCard title="Écarts par rapport à la normale" type="bar" :data="currentEcarts" />
+        <ChartCard title="Historique mensuel (°C)" type="line" :data="currentHistorique" />
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
+const loading = ref(true)
+const error = ref(null)
 
-const LABELS = {
-  heure:   ['00h','02h','04h','06h','08h','10h','12h','14h','16h','18h','20h','22h'],
-  jour:    ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'],
-  semaine: ['Sem 1','Sem 2','Sem 3','Sem 4'],
-  mois:    ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
+// --- Données brutes API ---
+const hourlyLabels = ref([])
+const hourlyTemps  = ref([])
+const dailyLabels  = ref([])
+const dailyMax     = ref([])
+const dailyMin     = ref([])
+const dailyMean    = ref([])
+
+// --- KPIs ---
+const kpi = ref({ current: '--', maxToday: '--', minToday: '--', amplitude: '--', ecartNormale: '--' })
+
+// --- Fetch Open-Meteo ---
+async function fetchMeteo() {
+  loading.value = true
+  error.value = null
+  try {
+    const url = new URL('https://api.open-meteo.com/v1/forecast')
+    url.searchParams.set('latitude', '50.6337')
+    url.searchParams.set('longitude', '5.5675')
+    url.searchParams.set('hourly', 'temperature_2m')
+    url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,temperature_2m_mean')
+    url.searchParams.set('past_days', '92')
+    url.searchParams.set('forecast_days', '1')
+    url.searchParams.set('timezone', 'auto')
+
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Erreur API: ${res.status}`)
+    const data = await res.json()
+
+    // Hourly
+    hourlyLabels.value = data.hourly.time.map(t => t.slice(11, 16)) // "HH:MM"
+    hourlyTemps.value  = data.hourly.temperature_2m
+
+    // Daily
+    dailyLabels.value = data.daily.time.map(t => {
+      const d = new Date(t)
+      return d.toLocaleDateString('fr-BE', { day: '2-digit', month: 'short' })
+    })
+    dailyMax.value  = data.daily.temperature_2m_max
+    dailyMin.value  = data.daily.temperature_2m_min
+    dailyMean.value = data.daily.temperature_2m_mean
+
+    // KPIs — valeurs du jour (dernier daily)
+    const last = dailyMax.value.length - 1
+    const maxT = Math.round(dailyMax.value[last])
+    const minT = Math.round(dailyMin.value[last])
+    const meanT = Math.round(dailyMean.value[last])
+
+    // Normale approximative pour Liège selon le mois
+    const month = new Date().getMonth()
+    const normales = [3, 4, 8, 12, 16, 19, 21, 21, 17, 13, 7, 4]
+    const normale = normales[month]
+
+    kpi.value = {
+      current:      meanT,
+      maxToday:     maxT,
+      minToday:     minT,
+      amplitude:    maxT - minT,
+      ecartNormale: Math.round((meanT - normale) * 10) / 10,
+    }
+  } catch (e) {
+    error.value = `Impossible de charger les données météo: ${e.message}`
+  } finally {
+    loading.value = false
+  }
 }
-const ZONES = ['Zone A','Zone B','Zone C','Zone D']
 
-const moyenneData = {
-  heure:   { labels: LABELS.heure,   datasets: [{ label: '°C', data: [12,11,10,10,11,14,17,19,21,20,18,15], borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,0.15)', fill:true, tension:0.4 }] },
-  jour:    { labels: LABELS.jour,    datasets: [{ label: '°C', data: [14,16,13,17,15,19,18], borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,0.15)', fill:true, tension:0.4 }] },
-  semaine: { labels: LABELS.semaine, datasets: [{ label: '°C', data: [13,15,17,16], borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,0.15)', fill:true, tension:0.4 }] },
-  mois:    { labels: LABELS.mois,    datasets: [{ label: '°C', data: [3,4,8,12,17,21,24,23,19,14,8,4], borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,0.12)', fill:true, tension:0.4 }] },
-}
-
-const zonesData = {
-  heure:   { labels: ZONES, datasets: [{ label: '°C', data: [18,22,15,20], backgroundColor:['#dc2626','#b91c1c','#7f1d1d','#ef4444'], borderRadius:6 }] },
-  jour:    { labels: ZONES, datasets: [{ label: '°C', data: [16,20,13,18], backgroundColor:['#dc2626','#b91c1c','#7f1d1d','#ef4444'], borderRadius:6 }] },
-  semaine: { labels: ZONES, datasets: [{ label: '°C', data: [15,19,12,17], backgroundColor:['#dc2626','#b91c1c','#7f1d1d','#ef4444'], borderRadius:6 }] },
-  mois:    { labels: ZONES, datasets: [{ label: '°C', data: [12,16,9,14],  backgroundColor:['#dc2626','#b91c1c','#7f1d1d','#ef4444'], borderRadius:6 }] },
-}
-
-const ecartsData = {
-  heure:   { labels: LABELS.heure,   datasets: [{ label: 'Écart (°C)', data: [1,-0.5,0,1.5,2,-1,0.5,2,3,1.5,-0.5,1], backgroundColor:'#ef4444', borderRadius:4 }] },
-  jour:    { labels: LABELS.jour,    datasets: [{ label: 'Écart (°C)', data: [1.2,-0.8,0.5,2.1,-0.3,1.8,0.9], backgroundColor:'#ef4444', borderRadius:4 }] },
-  semaine: { labels: LABELS.semaine, datasets: [{ label: 'Écart (°C)', data: [-0.5,1.2,2.0,0.8], backgroundColor:'#ef4444', borderRadius:4 }] },
-  mois:    { labels: LABELS.mois,    datasets: [{ label: 'Écart (°C)', data: [-1,0.5,-0.5,1,2,1.5,3,2.5,1,-0.5,-1,0.5], backgroundColor:'#ef4444', borderRadius:4 }] },
-}
-
-const historiqueData = {
-  heure:   { labels: LABELS.heure,   datasets: [{ label: '°C', data: [11,10,9,9,10,13,16,18,20,19,17,14], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.1)', fill:true, tension:0.4 }] },
-  jour:    { labels: LABELS.jour,    datasets: [{ label: '°C', data: [13,15,12,16,14,18,17], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.1)', fill:true, tension:0.4 }] },
-  semaine: { labels: LABELS.semaine, datasets: [{ label: '°C', data: [12,14,16,15], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.1)', fill:true, tension:0.4 }] },
-  mois:    { labels: LABELS.mois,    datasets: [{ label: '°C', data: [2,3,7,11,16,20,23,22,18,13,7,3], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.1)', fill:true, tension:0.4 }] },
-}
-
+// --- Computed chart data selon la période sélectionnée ---
 const p = () => filterStore.selectedPeriod
 const h = () => filterStore.historyLevels
 
-const currentMoyenne    = computed(() => buildHistoricalData(moyenneData[p()],    h(), p(), 'line'))
-const currentZones      = computed(() => buildHistoricalData(zonesData[p()],      h(), p(), 'bar'))
-const currentEcarts     = computed(() => buildHistoricalData(ecartsData[p()],     h(), p(), 'bar'))
-const currentHistorique = computed(() => buildHistoricalData(historiqueData[p()], h(), p(), 'line'))
+// Helpers pour extraire les N derniers éléments
+function lastN(arr, n) { return arr.slice(-n) }
+
+const moyenneData = computed(() => {
+  const period = p()
+  if (period === 'heure') {
+    // Dernières 24h — données horaires
+    const labels = lastN(hourlyLabels.value, 24)
+    const data   = lastN(hourlyTemps.value, 24)
+    return { labels, datasets: [{ label: '°C', data, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.15)', fill: true, tension: 0.4 }] }
+  }
+  if (period === 'jour') {
+    // 7 derniers jours
+    const labels = lastN(dailyLabels.value, 7)
+    const data   = lastN(dailyMean.value, 7).map(v => Math.round(v * 10) / 10)
+    return { labels, datasets: [{ label: '°C', data, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.15)', fill: true, tension: 0.4 }] }
+  }
+  if (period === 'semaine') {
+    // 4 dernières semaines — moyenne par semaine
+    const weeks = [0, 1, 2, 3].map(i => {
+      const chunk = dailyMean.value.slice(-(28 - i * 7), -(21 - i * 7) || undefined)
+      const avg = chunk.reduce((a, b) => a + b, 0) / (chunk.length || 1)
+      return Math.round(avg * 10) / 10
+    })
+    return { labels: ['Sem -3', 'Sem -2', 'Sem -1', 'Sem actuelle'], datasets: [{ label: '°C', data: weeks, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.15)', fill: true, tension: 0.4 }] }
+  }
+  // mois — moyenne mensuelle sur les 3 derniers mois
+  const byMonth = {}
+  dailyLabels.value.forEach((label, i) => {
+    const key = label.slice(3) // "Mois Année" sans le jour
+    if (!byMonth[key]) byMonth[key] = []
+    byMonth[key].push(dailyMean.value[i])
+  })
+  const labels = Object.keys(byMonth)
+  const data   = labels.map(k => Math.round(byMonth[k].reduce((a, b) => a + b, 0) / byMonth[k].length * 10) / 10)
+  return { labels, datasets: [{ label: '°C', data, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.12)', fill: true, tension: 0.4 }] }
+})
+
+const zonesData = computed(() => {
+  const period = p()
+  const n = period === 'heure' ? 1 : period === 'jour' ? 7 : period === 'semaine' ? 28 : 92
+  const labels = lastN(dailyLabels.value, n === 1 ? 1 : n)
+  const maxD   = lastN(dailyMax.value, n).map(v => Math.round(v * 10) / 10)
+  const minD   = lastN(dailyMin.value, n).map(v => Math.round(v * 10) / 10)
+  return {
+    labels,
+    datasets: [
+      { label: 'Max °C', data: maxD, backgroundColor: '#dc2626', borderRadius: 6 },
+      { label: 'Min °C', data: minD, backgroundColor: '#7f1d1d', borderRadius: 6 },
+    ],
+  }
+})
+
+const ecartsData = computed(() => {
+  const normales = [3, 4, 8, 12, 16, 19, 21, 21, 17, 13, 7, 4]
+  const period = p()
+  const n = period === 'heure' ? 24 : period === 'jour' ? 7 : period === 'semaine' ? 28 : 92
+
+  if (period === 'heure') {
+    const labels = lastN(hourlyLabels.value, 24)
+    const month  = new Date().getMonth()
+    const data   = lastN(hourlyTemps.value, 24).map(v => Math.round((v - normales[month]) * 10) / 10)
+    return { labels, datasets: [{ label: 'Écart (°C)', data, backgroundColor: '#ef4444', borderRadius: 4 }] }
+  }
+
+  const labels = lastN(dailyLabels.value, n)
+  const data   = lastN(dailyMean.value, n).map((v, i) => {
+    // On calcule le mois pour chaque point
+    const date  = new Date()
+    date.setDate(date.getDate() - (n - 1 - i))
+    const month = date.getMonth()
+    return Math.round((v - normales[month]) * 10) / 10
+  })
+  return { labels, datasets: [{ label: 'Écart (°C)', data, backgroundColor: '#ef4444', borderRadius: 4 }] }
+})
+
+const currentHistorique = computed(() => buildHistoricalData(moyenneData.value, h(), p(), 'line'))
+const currentMoyenne    = computed(() => buildHistoricalData(moyenneData.value, h(), p(), 'line'))
+const currentZones      = computed(() => buildHistoricalData(zonesData.value,   h(), p(), 'bar'))
+const currentEcarts     = computed(() => buildHistoricalData(ecartsData.value,  h(), p(), 'bar'))
+
+onMounted(fetchMeteo)
 </script>
 
 <style scoped>
