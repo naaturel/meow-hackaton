@@ -239,4 +239,36 @@ function onHandleClick() {
   z-index: 199;
   background: transparent;
 }
+
+@media (max-width: 640px) {
+  .drawer.open .panel {
+    max-height: 200px;
+    padding: 14px 12px;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .control-group {
+    width: 100%;
+  }
+
+  .btn-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+}
 </style>
