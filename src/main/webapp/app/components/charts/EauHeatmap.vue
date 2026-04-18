@@ -11,41 +11,38 @@ let chartInstance = null
 const heures = ['00h','02h','04h','06h','08h','10h','12h','14h','16h','18h','20h','22h']
 const jours  = ['Dim','Sam','Ven','Jeu','Mer','Mar','Lun']
 
-// Base consumption profile per hour index (0=00h, 1=02h, ...)
-const hourProfile = [60, 45, 40, 42, 70, 160, 310, 380, 340, 300, 280, 290, 310, 330, 310, 290, 320, 410, 490, 460, 380, 280, 190, 110]
-// 12 labels, each covering 2 hours → average the 2 hours
+// Water consumption profile (liters per 2h slot)
+const hourProfile = [10,8,7,8,35,190,280,260,200,160,140,145,155,170,145,135,155,225,260,240,185,125,70,30]
 const hourBase = heures.map((_, hi) => (hourProfile[hi * 2] + hourProfile[hi * 2 + 1]) / 2)
 
-// Day multipliers (Mon=1.0 reference, weekends lower)
 const dayMult = {
-  Lun: 1.00, Mar: 0.98, Mer: 1.02, Jeu: 0.99,
-  Ven: 1.05, Sam: 0.72, Dim: 0.58,
+  Lun: 1.00, Mar: 0.97, Mer: 1.03, Jeu: 0.99,
+  Ven: 1.04, Sam: 0.68, Dim: 0.55,
 }
 
 const matrixData = []
 jours.forEach((jour) => {
   heures.forEach((heure, hi) => {
     const base = hourBase[hi] * (dayMult[jour] ?? 1)
-    const noise = 0.92 + Math.random() * 0.16
+    const noise = 0.90 + Math.random() * 0.20
     matrixData.push({ x: heure, y: jour, v: Math.round(base * noise) })
   })
 })
 
-const MIN_V = 35
-const MAX_V = 520
+const MIN_V = 5
+const MAX_V = 280
 
-function getAmberColor(value) {
+function getBlueColor(value) {
   const ratio = Math.max(0, Math.min(1, (value - MIN_V) / (MAX_V - MIN_V)))
   if (ratio < 0.25) {
-    // Very dark amber-brown
     const t = ratio / 0.25
-    return `rgba(${Math.round(40 + t * 80)}, ${Math.round(20 + t * 40)}, ${Math.round(5 + t * 5)}, 0.9)`
+    return `rgba(${Math.round(5 + t * 15)}, ${Math.round(20 + t * 40)}, ${Math.round(50 + t * 80)}, 0.9)`
   } else if (ratio < 0.6) {
     const t = (ratio - 0.25) / 0.35
-    return `rgba(${Math.round(120 + t * 100)}, ${Math.round(60 + t * 60)}, ${Math.round(10)}, 0.92)`
+    return `rgba(${Math.round(20 + t * 20)}, ${Math.round(60 + t * 70)}, ${Math.round(130 + t * 80)}, 0.92)`
   } else {
     const t = (ratio - 0.6) / 0.4
-    return `rgba(${Math.round(220 + t * 25)}, ${Math.round(120 + t * 38)}, ${Math.round(10 + t * 5)}, 0.95)`
+    return `rgba(${Math.round(40 + t * 19)}, ${Math.round(130 + t * 0)}, ${Math.round(210 + t * 36)}, 0.95)`
   }
 }
 
@@ -54,9 +51,9 @@ onMounted(() => {
     type: 'matrix',
     data: {
       datasets: [{
-        label: 'Consommation (kWh)',
+        label: 'Consommation (L)',
         data: matrixData,
-        backgroundColor: (ctx) => getAmberColor(ctx.dataset.data[ctx.dataIndex]?.v ?? 0),
+        backgroundColor: (ctx) => getBlueColor(ctx.dataset.data[ctx.dataIndex]?.v ?? 0),
         borderColor: 'rgba(255,255,255,0.85)',
         borderWidth: 2,
         borderRadius: 4,
@@ -77,18 +74,18 @@ onMounted(() => {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(19,19,31,0.92)',
-          borderColor: 'rgba(245,158,11,0.3)',
+          backgroundColor: 'rgba(10,20,50,0.92)',
+          borderColor: 'rgba(59,130,246,0.4)',
           borderWidth: 1,
-          titleColor: 'rgba(255,255,255,0.7)',
-          bodyColor: '#f59e0b',
+          titleColor: 'rgba(255,255,255,0.75)',
+          bodyColor: '#60a5fa',
           padding: 10,
           callbacks: {
             title: (ctx) => {
               const d = ctx[0].dataset.data[ctx[0].dataIndex]
               return `${d.y}  ·  ${d.x}`
             },
-            label: (ctx) => ` ${ctx.dataset.data[ctx.dataIndex].v} kWh`,
+            label: (ctx) => ` ${ctx.dataset.data[ctx.dataIndex].v} L`,
           },
         },
       },
@@ -126,6 +123,6 @@ onBeforeUnmount(() => chartInstance?.destroy())
 
 <template>
   <div style="position: relative; width: 100%; height: 100%;">
-    <canvas ref="chartRef" role="img" aria-label="Heatmap consommation électrique par heure et jour"></canvas>
+    <canvas ref="chartRef" role="img" aria-label="Heatmap consommation eau par heure et jour"></canvas>
   </div>
 </template>

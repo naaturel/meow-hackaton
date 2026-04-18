@@ -54,7 +54,8 @@ watch(() => props.snrValue, (v) => {
 
 function initBuffer() {
   buffer = []
-  for (let i = 0; i < BUFFER; i++) buffer.push(0)
+  // Start at a neutral SNR so wiggle isn't multiplying by 0
+  for (let i = 0; i < BUFFER; i++) buffer.push(8)
 }
 
 function draw() {
@@ -86,9 +87,14 @@ function draw() {
   grad.addColorStop(0, 'rgba(245,158,11,0)')
   grad.addColorStop(1, 'rgba(245,158,11,1)')
 
-  const MIN = -20
-  const MAX = 20
-  const RANGE = MAX - MIN
+  // Dynamic Y range: zoom in on actual buffer values so ±1% wiggle is visible
+  const bufMin = Math.min(...buffer)
+  const bufMax = Math.max(...buffer)
+  const spread = Math.max(0.4, bufMax - bufMin)
+  const pad    = spread * 1.2
+  const MIN    = bufMin - pad
+  const MAX    = bufMax + pad
+  const RANGE  = MAX - MIN
 
   // Glow pass (wider, transparent)
   ctx.beginPath()
@@ -148,10 +154,11 @@ function draw() {
 
 function frame(now) {
   if (now - lastTick >= INTERVAL) {
-    // Repeat last known SNR to keep the line scrolling continuously
-    const next = latestSnr !== null ? latestSnr : buffer[buffer.length - 1]
+    const base = latestSnr !== null ? latestSnr : buffer[buffer.length - 1]
+    // ±1% wiggle on the plotted line only — display value stays clean
+    const wiggle = base * 0.01 * (Math.random() * 2 - 1)
     buffer.shift()
-    buffer.push(next)
+    buffer.push(base + wiggle)
     lastTick = now
     draw()
   }

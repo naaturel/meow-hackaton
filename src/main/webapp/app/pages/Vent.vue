@@ -5,9 +5,23 @@
       <p class="page-subtitle">Vitesse, direction et rafales</p>
     </div>
     <div class="kpi-row">
-      <KpiCard label="Vitesse moyenne" value="32" unit="km/h" trend="up" status="warn" trendLabel="+12% vs hier" />
-      <KpiCard label="Rafale maximale" value="80" unit="km/h" trend="up" status="bad" trendLabel="Alerte rafale" />
-      <KpiCard label="Direction dominante" value="SO" unit="" trend="flat" status="neutral" trendLabel="Sud-Ouest" />
+      <KpiCard
+        label="Vitesse moyenne"
+        :value="sim.vent.vitesse"
+        unit="km/h"
+        :trend="sim.vent.vitesse > 50 ? 'up' : 'flat'"
+        :status="sim.vent.vitesse > 70 ? 'bad' : sim.vent.vitesse > 45 ? 'warn' : 'neutral'"
+        :trendLabel="sim.vent.vitesse > 70 ? 'Alerte vent fort' : sim.vent.vitesse > 45 ? 'Vent soutenu' : 'Normal'"
+      />
+      <KpiCard
+        label="Rafale maximale"
+        :value="sim.vent.rafale"
+        unit="km/h"
+        trend="up"
+        :status="sim.vent.rafale > 90 ? 'bad' : sim.vent.rafale > 60 ? 'warn' : 'neutral'"
+        :trendLabel="sim.vent.rafale > 90 ? 'Alerte rafale' : 'Rafale modérée'"
+      />
+      <WindCompass />
     </div>
     <div class="grid">
       <ChartCard title="Vitesse moyenne (km/h)" type="line" :data="currentVitesse" />
@@ -22,10 +36,13 @@
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import KpiCard from '../components/KpiCard.vue'
+import WindCompass from '../components/WindCompass.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { useSimulatorStore } from '../stores/simulator.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
+const sim = useSimulatorStore()
 
 const LABELS = {
   heure:   ['00h','02h','04h','06h','08h','10h','12h','14h','16h','18h','20h','22h'],

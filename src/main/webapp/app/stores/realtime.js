@@ -20,8 +20,10 @@ function status(value, thresholds) {
 
 // IoT device routing
 const ELEC_POWER_DEVICES = new Set(['Compteur electrique TGBT', 'Serpont solaire', 'Compteur electrique solaire'])
-const ELEC_SNR_DEVICE = 'Compteur electrique TGBT'
-const INVALID_VALUE = -2.1474836e9
+const ELEC_SNR_DEVICE    = 'Compteur electrique TGBT'
+const EAU_DEVICES        = new Set(['Serpont eau compteur new', 'Compteur eau ancien atelier'])
+const EAU_SNR_DEVICE     = 'Serpont eau compteur new'
+const INVALID_VALUE      = -2.1474836e9
 
 function isValidValue(v) {
   return v != null && Math.abs(v - INVALID_VALUE) > 1e4
@@ -37,6 +39,13 @@ export const useRealtimeStore = defineStore('realtime', () => {
   // ── Électricité live (IoT) ────────────────────────────────────────
   const elecLive = ref({
     puissance:    { value: null, prev: null },
+    consommation: { value: 0 },
+    snr:          null,
+  })
+
+  // ── Eau live (IoT) ───────────────────────────────────────────────
+  const eauLive = ref({
+    debit:        { value: null, prev: null },
     consommation: { value: 0 },
     snr:          null,
   })
@@ -200,6 +209,15 @@ export const useRealtimeStore = defineStore('realtime', () => {
           if (msg.device_name === ELEC_SNR_DEVICE && msg.snr != null) {
             elecLive.value.snr = msg.snr
           }
+          if (EAU_DEVICES.has(msg.device_name) && isValidValue(msg.value)) {
+            const litres = msg.value * 10
+            eauLive.value.debit.prev  = eauLive.value.debit.value
+            eauLive.value.debit.value = Math.round(litres * 10) / 10
+            eauLive.value.consommation.value += litres
+          }
+          if (msg.device_name === EAU_SNR_DEVICE && msg.snr != null) {
+            eauLive.value.snr = msg.snr
+          }
           return
         }
 
@@ -239,6 +257,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
   return {
     connected, error,
     elecLive,
+    eauLive,
     elec, elecKpi,
     eau,  eauKpi,
     gaz,  gazKpi,

@@ -32,99 +32,128 @@
 </template>
 
 <script setup>
-const categories = [
-  {
-    path: '/electricite',
-    name: 'Électricité',
-    color: '#f59e0b',
-    value: '480',
-    unit: 'kW',
-    metricLabel: 'Puissance actuelle',
-    trend: 'up',
-    trendLabel: '+8% vs hier',
-    trendStatus: 'warn',
-    status: 'active',
-    statusLabel: 'Actif',
-  },
-  {
-    path: '/gaz',
-    name: 'Gaz',
-    color: '#8b5cf6',
-    value: '5.8',
-    unit: 'bar',
-    metricLabel: 'Pression réseau',
-    trend: 'flat',
-    trendLabel: 'Stable',
-    trendStatus: 'neutral',
-    status: 'active',
-    statusLabel: 'Actif',
-  },
-  {
-    path: '/temperature',
-    name: 'Température',
-    color: '#ef4444',
-    value: '19',
-    unit: '°C',
-    metricLabel: 'Température actuelle',
-    trend: 'up',
-    trendLabel: '+3°C vs normale',
-    trendStatus: 'warn',
-    status: 'warn',
-    statusLabel: 'Anomalie',
-  },
-  {
-    path: '/eau',
-    name: 'Eau',
-    color: '#3b82f6',
-    value: '22',
-    unit: 'L/s',
-    metricLabel: 'Débit actuel',
-    trend: 'down',
-    trendLabel: '-5% vs hier',
-    trendStatus: 'good',
-    status: 'active',
-    statusLabel: 'Normal',
-  },
-  {
-    path: '/vent',
-    name: 'Vent',
-    color: '#06b6d4',
-    value: '42',
-    unit: 'km/h',
-    metricLabel: 'Vitesse moyenne',
-    trend: 'up',
-    trendLabel: '+12% vs hier',
-    trendStatus: 'warn',
-    status: 'warn',
-    statusLabel: 'Rafales',
-  },
-  {
-    path: '/air',
-    name: "Qualité de l'air",
-    color: '#22c55e',
-    value: '42',
-    unit: 'IQA',
-    metricLabel: 'Indice qualité de l\'air',
-    trend: 'down',
-    trendLabel: 'Bon niveau',
-    trendStatus: 'good',
-    status: 'active',
-    statusLabel: 'Bon',
-  },
-  {
-    path: '/industriel',
-    name: 'Industriel',
-    color: '#94a3b8',
-    value: '3/4',
-    unit: '',
-    metricLabel: 'Lignes actives',
-    trend: 'flat',
-    trendLabel: '2 alertes actives',
-    trendStatus: 'warn',
-    status: 'warn',
-    statusLabel: '2 alertes',
-  },
-]
+import { computed } from 'vue'
+import { useSimulatorStore } from '../stores/simulator.js'
+import { useRealtimeStore } from '../stores/realtime.js'
+
+const sim = useSimulatorStore()
+const rt  = useRealtimeStore()
+
+const normales = [3,4,8,12,16,19,21,21,17,13,7,4]
+
+const categories = computed(() => {
+  // ── Électricité ──
+  const elecVal  = rt.elecLive.puissance.value
+  const elecPrev = rt.elecLive.puissance.prev
+  const elecPct  = elecVal !== null && elecPrev ? ((elecVal - elecPrev) / Math.abs(elecPrev) * 100).toFixed(1) : null
+
+  // ── Eau ──
+  const eauVal  = rt.eauLive.debit.value
+  const eauPrev = rt.eauLive.debit.prev
+  const eauPct  = eauVal !== null && eauPrev ? ((eauVal - eauPrev) / Math.abs(eauPrev) * 100).toFixed(1) : null
+
+  // ── Température ──
+  const tempVal  = sim.temp.current
+  const ecart    = Math.round((tempVal - normales[new Date().getMonth()]) * 10) / 10
+
+  // ── Air ──
+  const iqaLabel = sim.air.iqa < 30 ? 'Très bon' : sim.air.iqa < 50 ? 'Bon' : sim.air.iqa < 75 ? 'Modéré' : sim.air.iqa < 100 ? 'Médiocre' : 'Mauvais'
+  const iqaStatus = sim.air.iqa < 50 ? 'active' : sim.air.iqa < 100 ? 'warn' : 'bad'
+
+  return [
+    {
+      path: '/electricite',
+      name: 'Électricité',
+      color: '#f59e0b',
+      value: elecVal !== null ? String(Math.round(elecVal)) : '—',
+      unit: 'kW',
+      metricLabel: 'Puissance actuelle',
+      trend: elecPct !== null ? (elecPct > 0 ? 'up' : elecPct < 0 ? 'down' : 'flat') : 'flat',
+      trendLabel: elecPct !== null ? `${elecPct > 0 ? '+' : ''}${elecPct}% vs précédent` : 'En attente…',
+      trendStatus: elecVal !== null && elecVal > 1000 ? 'warn' : 'neutral',
+      status: elecVal !== null && elecVal > 1200 ? 'bad' : elecVal !== null && elecVal > 800 ? 'warn' : 'active',
+      statusLabel: elecVal !== null && elecVal > 1200 ? 'Alerte' : elecVal !== null && elecVal > 800 ? 'Élevé' : 'Actif',
+    },
+    {
+      path: '/gaz',
+      name: 'Gaz',
+      color: '#8b5cf6',
+      value: '5.8',
+      unit: 'bar',
+      metricLabel: 'Pression réseau',
+      trend: 'flat',
+      trendLabel: 'Stable',
+      trendStatus: 'neutral',
+      status: 'active',
+      statusLabel: 'Actif',
+    },
+    {
+      path: '/temperature',
+      name: 'Température',
+      color: '#ef4444',
+      value: String(tempVal),
+      unit: '°C',
+      metricLabel: 'Température actuelle',
+      trend: ecart >= 0 ? 'up' : 'down',
+      trendLabel: `${ecart > 0 ? '+' : ''}${ecart}°C vs normale`,
+      trendStatus: Math.abs(ecart) > 3 ? 'bad' : Math.abs(ecart) > 1.5 ? 'warn' : 'neutral',
+      status: Math.abs(ecart) > 3 ? 'bad' : Math.abs(ecart) > 1.5 ? 'warn' : 'active',
+      statusLabel: Math.abs(ecart) > 3 ? 'Anomalie' : Math.abs(ecart) > 1.5 ? 'Attention' : 'Normal',
+    },
+    {
+      path: '/eau',
+      name: 'Eau',
+      color: '#3b82f6',
+      value: eauVal !== null ? String(Math.round(eauVal)) : '—',
+      unit: 'L',
+      metricLabel: 'Débit actuel',
+      trend: eauPct !== null ? (eauPct > 0 ? 'up' : eauPct < 0 ? 'down' : 'flat') : 'flat',
+      trendLabel: eauPct !== null ? `${eauPct > 0 ? '+' : ''}${eauPct}% vs précédent` : 'En attente…',
+      trendStatus: 'neutral',
+      status: 'active',
+      statusLabel: 'Normal',
+    },
+    {
+      path: '/vent',
+      name: 'Vent',
+      color: '#06b6d4',
+      value: String(sim.vent.vitesse),
+      unit: 'km/h',
+      metricLabel: 'Vitesse moyenne',
+      trend: sim.vent.vitesse > 50 ? 'up' : 'flat',
+      trendLabel: `${sim.degToDir(sim.vent.dirDeg)} · Rafales ${sim.vent.rafale} km/h`,
+      trendStatus: sim.vent.vitesse > 70 ? 'bad' : sim.vent.vitesse > 45 ? 'warn' : 'neutral',
+      status: sim.vent.vitesse > 70 ? 'bad' : sim.vent.vitesse > 45 ? 'warn' : 'active',
+      statusLabel: sim.vent.vitesse > 70 ? 'Alerte' : sim.vent.vitesse > 45 ? 'Rafales' : 'Normal',
+    },
+    {
+      path: '/air',
+      name: "Qualité de l'air",
+      color: '#22c55e',
+      value: String(sim.air.iqa),
+      unit: 'IQA',
+      metricLabel: "Indice qualité de l'air",
+      trend: sim.air.iqa < 50 ? 'down' : 'up',
+      trendLabel: iqaLabel,
+      trendStatus: sim.air.iqa < 50 ? 'good' : sim.air.iqa < 100 ? 'warn' : 'bad',
+      status: iqaStatus,
+      statusLabel: iqaLabel,
+    },
+    {
+      path: '/industriel',
+      name: 'Industriel',
+      color: '#94a3b8',
+      value: '3/4',
+      unit: '',
+      metricLabel: 'Lignes actives',
+      trend: sim.indus.alertes > 2 ? 'up' : 'flat',
+      trendLabel: sim.indus.alertes === 0 ? 'Aucune alerte' : `${sim.indus.alertes} alerte${sim.indus.alertes > 1 ? 's' : ''}`,
+      trendStatus: sim.indus.alertes > 4 ? 'bad' : sim.indus.alertes > 1 ? 'warn' : 'good',
+      status: sim.indus.taux >= 80 ? 'active' : 'warn',
+      statusLabel: `${sim.indus.taux}% actif`,
+    },
+  ]
+})
 </script>
 
 <style scoped>

@@ -5,9 +5,30 @@
       <p class="page-subtitle">Particules, CO2 et indice de qualité</p>
     </div>
     <div class="kpi-row">
-      <KpiCard label="Indice qualité (IQA)" value="42" unit="/100" trend="down" status="good" trendLabel="Bon niveau" />
-      <KpiCard label="CO2" value="415" unit="ppm" trend="up" status="warn" trendLabel="+5 ppm vs hier" />
-      <KpiCard label="PM2.5" value="8" unit="µg/m³" trend="down" status="good" trendLabel="En dessous seuil" />
+      <KpiCard
+        label="Indice qualité (IQA)"
+        :value="sim.air.iqa"
+        unit="/100"
+        :trend="sim.air.iqa < 50 ? 'down' : 'up'"
+        :status="sim.air.iqa < 50 ? 'good' : sim.air.iqa < 100 ? 'warn' : 'bad'"
+        :trendLabel="iqaLabel"
+      />
+      <KpiCard
+        label="CO2"
+        :value="sim.air.co2"
+        unit="ppm"
+        trend="up"
+        :status="sim.air.co2 > 430 ? 'warn' : 'neutral'"
+        :trendLabel="sim.air.co2 > 430 ? 'Légèrement élevé' : 'Niveau normal'"
+      />
+      <KpiCard
+        label="PM2.5"
+        :value="sim.air.pm25"
+        unit="µg/m³"
+        :trend="sim.air.pm25 > 10 ? 'up' : 'down'"
+        :status="sim.air.pm25 > 25 ? 'bad' : sim.air.pm25 > 12 ? 'warn' : 'good'"
+        :trendLabel="sim.air.pm25 <= 12 ? 'En dessous du seuil' : 'Au-dessus du seuil'"
+      />
     </div>
     <div class="grid">
       <ChartCard title="Indice de qualité de l'air (IQA)" type="line" :data="currentIqa" />
@@ -23,9 +44,20 @@ import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { useSimulatorStore } from '../stores/simulator.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
+const sim = useSimulatorStore()
+
+const iqaLabel = computed(() => {
+  const v = sim.air.iqa
+  if (v < 30) return 'Très bon'
+  if (v < 50) return 'Bon'
+  if (v < 75) return 'Modéré'
+  if (v < 100) return 'Médiocre'
+  return 'Mauvais'
+})
 
 const LABELS = {
   heure:   ['00h','02h','04h','06h','08h','10h','12h','14h','16h','18h','20h','22h'],

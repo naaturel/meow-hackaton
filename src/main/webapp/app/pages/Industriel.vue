@@ -5,9 +5,30 @@
       <p class="page-subtitle">Lignes de production et supervision usine</p>
     </div>
     <div class="kpi-row">
-      <KpiCard label="Lignes actives" value="3/4" unit="" trend="flat" status="warn" trendLabel="Ligne C en maintenance" />
-      <KpiCard label="Alertes actives" value="2" unit="" trend="up" status="bad" trendLabel="2 nouvelles alertes" />
-      <KpiCard label="Taux de fonctionnement" value="72" unit="%" trend="flat" status="warn" trendLabel="Objectif : 80%" />
+      <KpiCard
+        label="Lignes actives"
+        value="3/4"
+        unit=""
+        trend="flat"
+        status="warn"
+        trendLabel="Ligne C en maintenance"
+      />
+      <KpiCard
+        label="Alertes actives"
+        :value="sim.indus.alertes"
+        unit=""
+        :trend="sim.indus.alertes > 2 ? 'up' : 'flat'"
+        :status="sim.indus.alertes > 4 ? 'bad' : sim.indus.alertes > 1 ? 'warn' : 'good'"
+        :trendLabel="sim.indus.alertes === 0 ? 'Aucune alerte' : `${sim.indus.alertes} alerte${sim.indus.alertes > 1 ? 's' : ''} active${sim.indus.alertes > 1 ? 's' : ''}`"
+      />
+      <KpiCard
+        label="Taux de fonctionnement"
+        :value="sim.indus.taux"
+        unit="%"
+        :trend="sim.indus.taux >= 80 ? 'up' : 'down'"
+        :status="sim.indus.taux >= 85 ? 'good' : sim.indus.taux >= 70 ? 'warn' : 'bad'"
+        :trendLabel="sim.indus.taux >= 80 ? 'Objectif atteint' : `Objectif : 80%`"
+      />
     </div>
     <div class="grid">
       <ChartCard title="Charge des lignes (%)" type="bar" :data="currentCharge" />
@@ -23,9 +44,11 @@ import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { useSimulatorStore } from '../stores/simulator.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
+const sim = useSimulatorStore()
 
 const LABELS = {
   heure:   ['00h','02h','04h','06h','08h','10h','12h','14h','16h','18h','20h','22h'],

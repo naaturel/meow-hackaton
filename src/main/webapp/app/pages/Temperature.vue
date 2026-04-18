@@ -27,9 +27,30 @@
     <div v-else-if="error" class="error">{{ error }}</div>
     <template v-else>
       <div class="kpi-row">
-        <KpiCard label="Température actuelle" :value="kpi.current" unit="°C" trend="up" status="warn" :trendLabel="`${kpi.ecartNormale > 0 ? '+' : ''}${kpi.ecartNormale}°C vs normale`" />
-        <KpiCard label="Température max aujourd'hui" :value="kpi.maxToday" unit="°C" trend="up" status="bad" trendLabel="Max du jour" />
-        <KpiCard label="Amplitude journalière" :value="kpi.amplitude" unit="°C" trend="flat" status="neutral" :trendLabel="`${kpi.minToday}°C → ${kpi.maxToday}°C`" />
+        <KpiCard
+          label="Température actuelle"
+          :value="sim.temp.current"
+          unit="°C"
+          :trend="liveEcart >= 0 ? 'up' : 'down'"
+          :status="Math.abs(liveEcart) > 3 ? 'bad' : Math.abs(liveEcart) > 1.5 ? 'warn' : 'neutral'"
+          :trendLabel="`${liveEcart > 0 ? '+' : ''}${liveEcart}°C vs normale`"
+        />
+        <KpiCard
+          label="Température max aujourd'hui"
+          :value="sim.temp.max"
+          unit="°C"
+          trend="up"
+          status="bad"
+          trendLabel="Max du jour"
+        />
+        <KpiCard
+          label="Amplitude journalière"
+          :value="liveAmplitude"
+          unit="°C"
+          trend="flat"
+          status="neutral"
+          :trendLabel="`${sim.temp.min}°C → ${sim.temp.max}°C`"
+        />
       </div>
       <div class="grid">
         <ChartCard title="Température moyenne (°C)" type="line" :data="currentMoyenne" />
@@ -210,17 +231,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import KpiCard from '../components/KpiCard.vue'
-import ReportCustomizer from './ReportCustomizer.vue' // ← nouveau composant
+import ReportCustomizer from './ReportCustomizer.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { useSimulatorStore } from '../stores/simulator.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import Chart from 'chart.js/auto'
 
 const filterStore = useFilterStore()
+const sim = useSimulatorStore()
 const loading     = ref(true)
 const error       = ref(null)
 const generating  = ref(false)
@@ -262,6 +285,17 @@ const dailyMean    = ref([])
 
 // ── KPIs ──
 const kpi = ref({ current: '--', maxToday: '--', minToday: '--', amplitude: '--', ecartNormale: '--' })
+
+// Seed simulator from API once it loads (kpi must be defined first)
+watch(() => kpi.value.current, (v) => { sim.initTemp(v) }, { once: true })
+
+const liveEcart = computed(() => {
+  const month = new Date().getMonth()
+  return Math.round((sim.temp.current - normales[month]) * 10) / 10
+})
+const liveAmplitude = computed(() =>
+  Math.round((sim.temp.max - sim.temp.min) * 10) / 10
+)
 
 // Normales mensuelles pour Liège
 const normales = [3, 4, 8, 12, 16, 19, 21, 21, 17, 13, 7, 4]
