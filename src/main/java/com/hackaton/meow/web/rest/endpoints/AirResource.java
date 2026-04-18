@@ -1,6 +1,9 @@
-package com.hackaton.meow.web.rest;
+package com.hackaton.meow.web.rest.endpoints;
 
 import java.util.List;
+
+import com.hackaton.meow.management.RecordService;
+import com.hackaton.meow.web.rest.DataPointDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class AirResource {
+
+    private final RecordService service;
+
+    public AirResource(RecordService service) {
+        this.service = service;
+    }
 
     @GetMapping("/air/iqa")
     public ResponseEntity<List<DataPointDTO>> getIqa(@RequestParam(defaultValue = "jour") String periode) {

@@ -4,12 +4,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Service
 public class SSEService {
 
-    private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+    private final Set<SseEmitter> emitters = new CopyOnWriteArraySet<>();
 
     public SseEmitter subscribe() {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
