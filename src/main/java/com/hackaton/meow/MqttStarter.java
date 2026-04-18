@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.hackaton.meow.domain.exceptions.ServiceException;
 import com.hackaton.meow.domain.utils.Logger;
 import com.hackaton.meow.management.MqttService;
+import com.hackaton.meow.management.PayloadService;
 import com.hackaton.meow.management.SSEService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -20,10 +20,12 @@ public class MqttStarter {
 
     private final MqttService mqttService;
     private final SSEService sseService;
+    private final PayloadService payloadService;
 
-    public MqttStarter(MqttService mqttService, SSEService sseService) {
+    public MqttStarter(MqttService mqttService, SSEService sseService, PayloadService payloadService) {
         this.mqttService = mqttService;
         this.sseService = sseService;
+        this.payloadService = payloadService;
     }
 
     @PostConstruct
@@ -54,13 +56,9 @@ public class MqttStarter {
 
         mqttService.onMessageReceived((msg) -> {
             Logger.displayInfo("Received message on topic " + msg.getTopic() + ": " + msg.getContent());
-            Type type = new TypeToken<Map<String, Object>>(){}.getType();
-            Map<String, Object> obj = msg.getObject(type, "object");
 
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("topic", msg.getTopic());
-            payload.put("data", obj != null ? obj : new HashMap<>());
-            sseService.broadcast(new Gson().toJson(payload));
+            String payload = payloadService.getPayload(msg);
+            sseService.broadcast(payload);
         });
 
         mqttService.registerCallback();
