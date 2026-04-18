@@ -31,15 +31,17 @@ public class PayloadService {
         res.put("rssi", rxInfo.getFirst().get("rssi"));
         res.put("time", rxInfo.getFirst().get("time"));
 
-        float value= Integer.MIN_VALUE;
-        if(isGaz(eui)){
+        float value = Integer.MIN_VALUE;
+        if(obj.containsKey("TOTAL_PULSE")){
             value = (float)obj.get("TOTAL_PULSE");
-        } else if(isWater(eui)){
-            value = (
-                (float)obj.get("PA4_TOTAL_PULSE") == 0 ?
-                (float)obj.get("PA8_TOTAL_PULSE") == 0 ?
-                (float)obj.get("PA15_TOTAL_PULSE") : 0 : 0);
-        } else if(isElectricity(eui)){
+        } else if (obj.containsKey("PA4_TOTAL_PULSE")
+            || obj.containsKey("PA8_TOTAL_PULSE")
+            || obj.containsKey("PB15_TOTAL_PULSE")) {
+
+            Object data = getFirstNonZero(obj, "PA4_TOTAL_PULSE", "PA8_TOTAL_PULSE", "PB15_TOTAL_PULSE");
+            if (data != null) value = toFloat(data);
+
+        } else if(obj.containsKey("medium")){
             value = 150 + (float) (Math.random() * (3500 - 150));
         }
 
@@ -68,5 +70,22 @@ public class PayloadService {
             || id.equalsIgnoreCase("102ceffffe011026")
             || id.equalsIgnoreCase("102ceffffe0111c0")
             || id.equalsIgnoreCase("102ceffffe011134");
+    }
+
+    private float toFloat(Object obj) {
+        if (obj instanceof Number number) {
+            return number.floatValue();
+        }
+        throw new IllegalArgumentException("Cannot convert " + obj.getClass().getName() + " to float");
+    }
+
+    private Object getFirstNonZero(Map<String, Object> obj, String... keys) {
+        for (String key : keys) {
+            Object val = obj.get(key);
+            if (val != null && toFloat(val) != 0) {
+                return val;
+            }
+        }
+        return null;
     }
 }
