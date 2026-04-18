@@ -18,14 +18,6 @@ public class PayloadService {
     }
 
     public String getPayload(MqttMessageWrapper message){
-        //            time
-        //            tenant_name (A qui ça appartient)
-        //            application_name (Où se situe l'appareil (sur quel site))
-        //            device_name (C'est quoi comme appareil)
-        //            dev_eui (identifiant unique de l'appareil)
-        //            object (les données de l'objet)
-        //            rx_info (les données de réception)
-        //            tx_info (les données de transmission)
 
         Map<String, Object> deviceInfo = message.getObject(new TypeToken<Map<String, Object>>(){}.getType(), "deviceInfo");
         Map<String, Object> obj = message.getObject(new TypeToken<Map<String, Object>>(){}.getType(), "object");

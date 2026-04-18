@@ -8,6 +8,7 @@ import Air from '../pages/Air.vue'
 import Industriel from '../pages/Industriel.vue'
 import Temperature from '../pages/Temperature.vue'
 
+
 const routes = [
   { path: '/', component: Overview },
   { path: '/electricite', component: Electricite },
@@ -17,6 +18,7 @@ const routes = [
   { path: '/air', component: Air },
   { path: '/industriel', component: Industriel },
   { path: '/temperature', component: Temperature },
+
 ]
 
 export default createRouter({
