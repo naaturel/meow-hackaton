@@ -225,5 +225,6 @@ jhipster:
 
 # application:
 
-openai:
-  api-key: ${OPENAI_API_KEY:}
+azure:
+  openai:
+    api-key: 6koXg8WIYRnfXIWtqNECa7f2k9VKCg8VZolcbGBuNFaTlMnOaHIWJQQJ99CDACfhMk5XJ3w3AAAAACOGEnoG
