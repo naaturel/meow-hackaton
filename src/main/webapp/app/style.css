@@ -32,13 +32,11 @@ body {
   margin-top: 6px !important;
 }
 
-/* ── Halo : overflow visible + aligné à gauche derrière le titre ── */
-.page {
-  overflow: visible !important;
-}
+/* ── Halo : centré en haut, légèrement atténué ── */
 [class*="theme-"]::before {
   left: -80px !important;
   transform: none !important;
+  top: 0px !important;
   opacity: 0.4 !important;
 }
 
@@ -100,6 +98,10 @@ body {
     grid-template-columns: 1fr !important;
     grid-template-rows: unset !important;
     gap: 12px !important;
+    padding: 0 12px 12px !important;
+  }
+  .kpi-row {
+    grid-template-columns: 1fr !important;
     padding: 0 12px 12px !important;
   }
   .page-header {

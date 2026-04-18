@@ -197,6 +197,8 @@ function onHandleClick() {
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .drawer.open .panel {
@@ -208,6 +210,8 @@ function onHandleClick() {
   display: flex;
   align-items: center;
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .control-group {
@@ -278,7 +282,7 @@ function onHandleClick() {
 
 @media (max-width: 640px) {
   .drawer.open .panel {
-    max-height: 200px;
+    max-height: 300px;
     padding: 14px 12px;
   }
 
@@ -286,6 +290,8 @@ function onHandleClick() {
     flex-direction: column;
     gap: 12px;
     width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .divider {
@@ -300,6 +306,7 @@ function onHandleClick() {
   .btn-row {
     flex-wrap: wrap;
     justify-content: center;
+    width: 100%;
   }
 
   .ctrl-btn {
