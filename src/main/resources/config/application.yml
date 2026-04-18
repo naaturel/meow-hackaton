@@ -125,6 +125,7 @@ spring:
     group:
       dev:
         - secret-samples
+        - secret
         - api-docs
         # Uncomment to activate TLS for the dev profile
         #- tls
