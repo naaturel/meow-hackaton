@@ -209,13 +209,6 @@ const categories = [
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), transparent 70%);
-}
 
 .cat-card:hover {
   transform: translateY(-3px);
@@ -227,6 +220,10 @@ const categories = [
   display: flex;
   align-items: center;
   gap: 8px;
+  background: linear-gradient(to right, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+  margin: -22px -22px 0;
+  padding: 14px 22px 12px;
+  border-radius: 15px 15px 0 0;
 }
 
 .cat-dot {

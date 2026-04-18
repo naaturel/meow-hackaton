@@ -1,6 +1,5 @@
 package com.hackaton.meow;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hackaton.meow.domain.exceptions.ServiceException;
 import com.hackaton.meow.domain.utils.Logger;

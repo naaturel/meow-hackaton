@@ -51,24 +51,20 @@ const mergedOptions = computed(() => ({
   overflow: hidden;
 }
 
-.chart-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent, #22c55e), transparent 80%);
-  border-radius: 16px 16px 0 0;
-}
 
 .chart-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--accent, #22c55e), 0 1px 0 rgba(255,255,255,0.8) inset;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25), 0 1px 0 rgba(255,255,255,0.8) inset;
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: linear-gradient(to right, color-mix(in srgb, var(--accent, #22c55e) 12%, transparent), transparent 70%);
+  margin: -22px -22px 0;
+  padding: 14px 22px 12px;
+  border-radius: 15px 15px 0 0;
 }
 
 .card-title {
