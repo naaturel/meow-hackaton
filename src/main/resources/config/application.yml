@@ -100,6 +100,15 @@ mongock:
   migration-scan-package:
     - com.hackaton.meow.config.dbmigrations
 
+mqtt:
+  broker-url:
+    plain: tcp://hackathon.finemeca.com:1883
+    secure: tcp://hackathon.finemeca.com:8883
+
+  client-id: "hackaton-api"
+  username: ""
+  password: ""
+
 spring:
   application:
     name: meow

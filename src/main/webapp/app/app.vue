@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    <FilterDrawer />
     <Sidebar />
     <main class="content">
       <RouterView />
@@ -9,6 +10,7 @@
 
 <script setup>
 import Sidebar from './components/Sidebar.vue'
+import FilterDrawer from './components/FilterDrawer.vue'
 </script>
 
 <style scoped>

@@ -56,6 +56,9 @@ dependencies {
     implementation libs.jhipster.framework
     implementation libs.mapstruct
     implementation libs.springdoc.openapi.starter.webmvc.api
+
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5"
+
     implementation "org.springframework.boot:spring-boot-jackson2"
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
