@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -56,11 +55,8 @@ public class MqttStarter {
             Logger.displayInfo("Received message on topic " + msg.getTopic() + ": " + msg.getContent());
             Type type = new TypeToken<Map<String, Object>>(){}.getType();
             Map<String, Object> obj = msg.getObject(type, "object");
-
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("topic", msg.getTopic());
-            payload.put("data", obj != null ? obj : new HashMap<>());
-            sseService.broadcast(new Gson().toJson(payload));
+            String payload = new Gson().toJson(obj);
+            sseService.broadcast(payload);
         });
 
         mqttService.registerCallback();
