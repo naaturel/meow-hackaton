@@ -18,15 +18,15 @@
       <div class="nav-body">
         <div class="nav-section">
           <div class="nav-section-label">Énergie</div>
-          <RouterLink to="/electricite" class="nav-link" @click="close">
+          <RouterLink to="/electricite" class="nav-link" :style="{ '--dot-color': '#f59e0b' }" @click="close">
             <span class="dot" style="background:#f59e0b"></span>
             <span>Électricité</span>
           </RouterLink>
-          <RouterLink to="/gaz" class="nav-link" @click="close">
+          <RouterLink to="/gaz" class="nav-link" :style="{ '--dot-color': '#8b5cf6' }" @click="close">
             <span class="dot" style="background:#8b5cf6"></span>
             <span>Gaz</span>
           </RouterLink>
-          <RouterLink to="/temperature" class="nav-link" @click="close">
+          <RouterLink to="/temperature" class="nav-link" :style="{ '--dot-color': '#ef4444' }" @click="close">
             <span class="dot" style="background:#ef4444"></span>
             <span>Température</span>
           </RouterLink>
@@ -34,15 +34,15 @@
 
         <div class="nav-section">
           <div class="nav-section-label">Environnement</div>
-          <RouterLink to="/eau" class="nav-link" @click="close">
+          <RouterLink to="/eau" class="nav-link" :style="{ '--dot-color': '#3b82f6' }" @click="close">
             <span class="dot" style="background:#3b82f6"></span>
             <span>Eau</span>
           </RouterLink>
-          <RouterLink to="/vent" class="nav-link" @click="close">
+          <RouterLink to="/vent" class="nav-link" :style="{ '--dot-color': '#06b6d4' }" @click="close">
             <span class="dot" style="background:#06b6d4"></span>
             <span>Vent</span>
           </RouterLink>
-          <RouterLink to="/air" class="nav-link" @click="close">
+          <RouterLink to="/air" class="nav-link" :style="{ '--dot-color': '#22c55e' }" @click="close">
             <span class="dot" style="background:#22c55e"></span>
             <span>Qualité de l'air</span>
           </RouterLink>
@@ -50,7 +50,7 @@
 
         <div class="nav-section">
           <div class="nav-section-label">Production</div>
-          <RouterLink to="/industriel" class="nav-link" @click="close">
+          <RouterLink to="/industriel" class="nav-link" :style="{ '--dot-color': '#94a3b8' }" @click="close">
             <span class="dot" style="background:#94a3b8"></span>
             <span>Capteurs industriels</span>
           </RouterLink>
@@ -204,8 +204,8 @@ const close = () => isOpen.value = false
 }
 
 .nav-link.router-link-active {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: color-mix(in srgb, var(--dot-color) 15%, transparent);
+  color: var(--dot-color);
   font-weight: 600;
 }
 
