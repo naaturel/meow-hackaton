@@ -138,6 +138,7 @@ spring:
     group:
       dev:
         - secret-samples
+        - secret
         - api-docs
         # Uncomment to activate TLS for the dev profile
         #- tls
@@ -238,5 +239,6 @@ jhipster:
 
 # application:
 
-openai:
-  api-key: ${OPENAI_API_KEY:}
+azure:
+  openai:
+    api-key: REMPLACE_PAR_TA_CLE
