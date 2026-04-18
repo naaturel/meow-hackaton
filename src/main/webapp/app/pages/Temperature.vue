@@ -4,6 +4,11 @@
       <h2 class="page-title">Température</h2>
       <p class="page-subtitle">Relevés thermiques et anomalies</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Température actuelle" value="19" unit="°C" trend="up" status="warn" trendLabel="+3°C vs normale" />
+      <KpiCard label="Zone la plus chaude" value="22" unit="°C" trend="up" status="bad" trendLabel="Zone B — anomalie" />
+      <KpiCard label="Amplitude journalière" value="9" unit="°C" trend="flat" status="neutral" trendLabel="12°C → 21°C" />
+    </div>
     <div class="grid">
       <ChartCard title="Température moyenne (°C)" type="line" :data="currentMoyenne" />
       <ChartCard title="Température par zone (°C)" type="bar" :data="currentZones" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -125,6 +131,6 @@ const currentHistorique = computed(() => buildHistoricalData(historiqueData[p()]
   padding: 0 28px 28px;
 }
 
-.grid :deep(.chart-card) {
+.grid :deep(.chart-card) {
 }
 </style>

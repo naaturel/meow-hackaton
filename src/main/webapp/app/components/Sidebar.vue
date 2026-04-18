@@ -17,6 +17,13 @@
 
       <div class="nav-body">
         <div class="nav-section">
+          <RouterLink to="/" class="nav-link" :style="{ '--dot-color': '#6366f1' }" @click="close">
+            <span class="dot" style="background:#6366f1"></span>
+            <span>Vue d'ensemble</span>
+          </RouterLink>
+        </div>
+
+        <div class="nav-section">
           <div class="nav-section-label">Énergie</div>
           <RouterLink to="/electricite" class="nav-link" :style="{ '--dot-color': '#f59e0b' }" @click="close">
             <span class="dot" style="background:#f59e0b"></span>
@@ -61,9 +68,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const isOpen = ref(false)
+onMounted(() => { if (window.innerWidth >= 1024) isOpen.value = true })
 const toggle = () => isOpen.value = !isOpen.value
 const close = () => isOpen.value = false
 </script>

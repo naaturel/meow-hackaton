@@ -4,6 +4,11 @@
       <h2 class="page-title">Qualité de l'air</h2>
       <p class="page-subtitle">Particules, CO2 et indice de qualité</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Indice qualité (IQA)" value="42" unit="/100" trend="down" status="good" trendLabel="Bon niveau" />
+      <KpiCard label="CO2" value="415" unit="ppm" trend="up" status="warn" trendLabel="+5 ppm vs hier" />
+      <KpiCard label="PM2.5" value="8" unit="µg/m³" trend="down" status="good" trendLabel="En dessous seuil" />
+    </div>
     <div class="grid">
       <ChartCard title="Indice de qualité de l'air (IQA)" type="line" :data="currentIqa" />
       <ChartCard title="Concentration CO2 (ppm)" type="line" :data="currentCo2" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -124,6 +130,6 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
   padding: 0 28px 28px;
 }
 
-.grid :deep(.chart-card) {
+.grid :deep(.chart-card) {
 }
 </style>

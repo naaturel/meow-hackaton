@@ -7,6 +7,10 @@
       @click="onHandleClick"
     >
       <span class="handle-pill" />
+      <div class="handle-live">
+        <span class="live-dot"></span>
+        <span class="live-label">LIVE</span>
+      </div>
     </div>
 
     <div class="panel">
@@ -121,9 +125,11 @@ function onHandleClick() {
 
 .handle {
   height: 40px;
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding: 0 16px;
   cursor: pointer;
   pointer-events: all;
   background: rgba(15, 15, 26, 0.92);
@@ -137,7 +143,37 @@ function onHandleClick() {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.handle-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px #22c55e; }
+  50%       { opacity: 0.5; box-shadow: 0 0 2px #22c55e; }
+}
+
+.live-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #22c55e;
+}
+
 .handle-pill {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   width: 40px;
   height: 3px;
   border-radius: 2px;

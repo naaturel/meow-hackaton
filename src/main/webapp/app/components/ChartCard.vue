@@ -62,7 +62,7 @@ const mergedOptions = computed(() => ({
 
 .chart-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 1px 0 rgba(255,255,255,0.8) inset;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--accent, #22c55e), 0 1px 0 rgba(255,255,255,0.8) inset;
 }
 
 .card-header {

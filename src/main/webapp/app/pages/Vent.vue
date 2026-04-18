@@ -4,6 +4,11 @@
       <h2 class="page-title">Vent</h2>
       <p class="page-subtitle">Vitesse, direction et rafales</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Vitesse moyenne" value="32" unit="km/h" trend="up" status="warn" trendLabel="+12% vs hier" />
+      <KpiCard label="Rafale maximale" value="80" unit="km/h" trend="up" status="bad" trendLabel="Alerte rafale" />
+      <KpiCard label="Direction dominante" value="SO" unit="" trend="flat" status="neutral" trendLabel="Sud-Ouest" />
+    </div>
     <div class="grid">
       <ChartCard title="Vitesse moyenne (km/h)" type="line" :data="currentVitesse" />
       <ChartCard title="Rose des vents" type="doughnut" :data="currentDirection" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -124,6 +130,6 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
   padding: 0 28px 28px;
 }
 
-.grid :deep(.chart-card) {
+.grid :deep(.chart-card) {
 }
 </style>

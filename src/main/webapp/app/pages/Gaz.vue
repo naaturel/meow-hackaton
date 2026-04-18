@@ -4,6 +4,11 @@
       <h2 class="page-title">Gaz</h2>
       <p class="page-subtitle">Pression, débit et consommation gaz</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Pression réseau" value="5.8" unit="bar" trend="flat" status="neutral" trendLabel="Stable" />
+      <KpiCard label="Consommation (jour)" value="1 400" unit="m³" trend="down" status="good" trendLabel="-3% vs hier" />
+      <KpiCard label="Débit actuel" value="18.5" unit="m³/h" trend="flat" status="neutral" trendLabel="Normal" />
+    </div>
     <div class="grid">
       <ChartCard title="Consommation totale (m³)" type="line" :data="currentConsommation" />
       <ChartCard title="Pression réseau (bar)" type="line" :data="currentPression" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -103,5 +109,5 @@ const currentEvolution    = computed(() => buildHistoricalData(evolutionData[p()
   gap: 20px;
   padding: 0 28px 28px;
 }
-
+
 </style>

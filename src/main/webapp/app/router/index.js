@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import Overview from '../pages/Overview.vue'
 import Electricite from '../pages/Electricite.vue'
 import Eau from '../pages/Eau.vue'
 import Gaz from '../pages/Gaz.vue'
@@ -8,7 +9,7 @@ import Industriel from '../pages/Industriel.vue'
 import Temperature from '../pages/Temperature.vue'
 
 const routes = [
-  { path: '/', redirect: '/electricite' },
+  { path: '/', component: Overview },
   { path: '/electricite', component: Electricite },
   { path: '/eau', component: Eau },
   { path: '/gaz', component: Gaz },

@@ -4,6 +4,11 @@
       <h2 class="page-title">Électricité</h2>
       <p class="page-subtitle">Consommation et production électrique</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Puissance actuelle" value="480" unit="kW" trend="up" status="warn" trendLabel="+8% vs hier" />
+      <KpiCard label="Consommation (semaine)" value="3 200" unit="kWh" trend="flat" status="neutral" trendLabel="= vs semaine préc." />
+      <KpiCard label="Coût estimé" value="128" unit="€" trend="up" status="warn" trendLabel="+5% vs mois préc." />
+    </div>
     <div class="grid">
       <ChartCard title="Consommation totale (kWh)" type="line" :data="currentConsommation" />
       <ChartCard title="Pic de consommation" type="bar" :data="currentPic" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -103,5 +109,5 @@ const currentEvolution    = computed(() => buildHistoricalData(evolutionData[p()
   gap: 20px;
   padding: 0 28px 28px;
 }
-
+
 </style>

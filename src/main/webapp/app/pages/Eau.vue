@@ -4,6 +4,11 @@
       <h2 class="page-title">Eau</h2>
       <p class="page-subtitle">Consommation et qualité de l'eau</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Débit actuel" value="22" unit="L/s" trend="flat" status="neutral" trendLabel="Normal" />
+      <KpiCard label="Consommation (jour)" value="2 100" unit="m³" trend="down" status="good" trendLabel="-5% vs hier" />
+      <KpiCard label="Indice qualité" value="98" unit="/100" trend="up" status="good" trendLabel="Excellent" />
+    </div>
     <div class="grid">
       <ChartCard title="Consommation totale (m³)" type="line" :data="currentConsommation" />
       <ChartCard title="Débit moyen (L/s)" type="line" :data="currentDebit" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -103,5 +109,5 @@ const currentEvolution    = computed(() => buildHistoricalData(evolutionData[p()
   gap: 20px;
   padding: 0 28px 28px;
 }
-
+
 </style>

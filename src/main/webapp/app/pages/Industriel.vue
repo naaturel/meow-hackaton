@@ -4,6 +4,11 @@
       <h2 class="page-title">Capteurs industriels</h2>
       <p class="page-subtitle">Lignes de production et supervision usine</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Lignes actives" value="3/4" unit="" trend="flat" status="warn" trendLabel="Ligne C en maintenance" />
+      <KpiCard label="Alertes actives" value="2" unit="" trend="up" status="bad" trendLabel="2 nouvelles alertes" />
+      <KpiCard label="Taux de fonctionnement" value="72" unit="%" trend="flat" status="warn" trendLabel="Objectif : 80%" />
+    </div>
     <div class="grid">
       <ChartCard title="Charge des lignes (%)" type="bar" :data="currentCharge" />
       <ChartCard title="Alertes capteurs" type="bar" :data="currentAlertes" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -125,6 +131,6 @@ const currentFonctionnement = computed(() => buildHistoricalData(fonctionnementD
   padding: 0 28px 28px;
 }
 
-.grid :deep(.chart-card) {
+.grid :deep(.chart-card) {
 }
 </style>
