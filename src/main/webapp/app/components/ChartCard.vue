@@ -1,12 +1,34 @@
 <template>
   <div class="chart-card">
     <h3 class="chart-title">{{ title }}</h3>
-    <div class="chart-placeholder"></div>
+    <div class="chart-body">
+      <LineChart v-if="type === 'line'" :data="data" :options="mergedOptions" />
+      <BarChart v-else-if="type === 'bar'" :data="data" :options="mergedOptions" />
+      <DoughnutChart v-else-if="type === 'doughnut'" :data="data" :options="mergedOptions" />
+      <div v-else class="chart-placeholder" />
+    </div>
   </div>
 </template>
 
 <script setup>
-defineProps({ title: String })
+import { computed } from 'vue'
+import LineChart from './charts/LineChart.vue'
+import BarChart from './charts/BarChart.vue'
+import DoughnutChart from './charts/DoughnutChart.vue'
+
+const props = defineProps({
+  title: String,
+  type: String,
+  data: Object,
+  options: { type: Object, default: () => ({}) },
+})
+
+const mergedOptions = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: '#555' } } },
+  ...props.options,
+}))
 </script>
 
 <style scoped>
@@ -30,9 +52,15 @@ defineProps({ title: String })
   letter-spacing: 0.04em;
 }
 
-.chart-placeholder {
+.chart-body {
   flex: 1;
   min-height: 180px;
+  position: relative;
+}
+
+.chart-placeholder {
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.04);
   border-radius: 8px;
   border: 2px dashed rgba(0, 0, 0, 0.1);
