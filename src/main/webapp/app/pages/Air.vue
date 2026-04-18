@@ -4,6 +4,11 @@
       <h2 class="page-title">Qualité de l'air</h2>
       <p class="page-subtitle">Particules, CO2 et indice de qualité</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Indice qualité (IQA)" value="42" unit="/100" trend="down" status="good" trendLabel="Bon niveau" />
+      <KpiCard label="CO2" value="415" unit="ppm" trend="up" status="warn" trendLabel="+5 ppm vs hier" />
+      <KpiCard label="PM2.5" value="8" unit="µg/m³" trend="down" status="good" trendLabel="En dessous seuil" />
+    </div>
     <div class="grid">
       <ChartCard title="Indice de qualité de l'air (IQA)" type="line" :data="currentIqa" />
       <ChartCard title="Concentration CO2 (ppm)" type="line" :data="currentCo2" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -66,10 +72,64 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
 </script>
 
 <style scoped>
-.page { min-height: 100vh; padding: 0; display: flex; flex-direction: column; }
-.theme-air { background: linear-gradient(160deg, #001a0a 0%, #065f2e 40%, #16a34a 100%); }
-.page-header { padding: 84px 28px 28px; }
-.page-title { margin: 0 0 4px; font-size: 1.6rem; font-weight: 700; color: #fff; }
-.page-subtitle { margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.6); }
-.grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; padding: 0 28px 28px; }
+.page {
+  min-height: 100vh;
+  background: #13131f;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-air {
+  --accent: #22c55e;
+}
+
+.theme-air::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(34, 197, 94, 0.28) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.page-header {
+  position: relative;
+  padding: 84px 28px 28px;
+}
+
+.page-title {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #22c55e;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; animation: dot-pulse 2s ease-in-out infinite; }
+
+.page-subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.grid {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  padding: 0 28px 28px;
+}
+
+.grid :deep(.chart-card) {
+}
 </style>

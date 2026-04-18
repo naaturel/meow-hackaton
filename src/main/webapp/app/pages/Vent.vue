@@ -4,6 +4,11 @@
       <h2 class="page-title">Vent</h2>
       <p class="page-subtitle">Vitesse, direction et rafales</p>
     </div>
+    <div class="kpi-row">
+      <KpiCard label="Vitesse moyenne" value="32" unit="km/h" trend="up" status="warn" trendLabel="+12% vs hier" />
+      <KpiCard label="Rafale maximale" value="80" unit="km/h" trend="up" status="bad" trendLabel="Alerte rafale" />
+      <KpiCard label="Direction dominante" value="SO" unit="" trend="flat" status="neutral" trendLabel="Sud-Ouest" />
+    </div>
     <div class="grid">
       <ChartCard title="Vitesse moyenne (km/h)" type="line" :data="currentVitesse" />
       <ChartCard title="Rose des vents" type="doughnut" :data="currentDirection" />
@@ -16,6 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
+import KpiCard from '../components/KpiCard.vue'
 import { useFilterStore } from '../stores/filter.js'
 import { buildHistoricalData } from '../composables/useChartHistory.js'
 
@@ -66,10 +72,64 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
 </script>
 
 <style scoped>
-.page { min-height: 100vh; padding: 0; display: flex; flex-direction: column; }
-.theme-vent { background: linear-gradient(160deg, #001a1f 0%, #065666 40%, #0ea5e9 100%); }
-.page-header { padding: 84px 28px 28px; }
-.page-title { margin: 0 0 4px; font-size: 1.6rem; font-weight: 700; color: #fff; }
-.page-subtitle { margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.6); }
-.grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; padding: 0 28px 28px; }
+.page {
+  min-height: 100vh;
+  background: #13131f;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-vent {
+  --accent: #06b6d4;
+}
+
+.theme-vent::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(6, 182, 212, 0.28) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.page-header {
+  position: relative;
+  padding: 84px 28px 28px;
+}
+
+.page-title {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #06b6d4;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; animation: dot-pulse 2s ease-in-out infinite; }
+
+.page-subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.grid {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  padding: 0 28px 28px;
+}
+
+.grid :deep(.chart-card) {
+}
 </style>
