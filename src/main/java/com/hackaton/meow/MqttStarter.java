@@ -10,8 +10,6 @@ import com.hackaton.meow.management.SSEService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
