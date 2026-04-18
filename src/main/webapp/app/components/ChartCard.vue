@@ -29,27 +29,40 @@ const props = defineProps({
 const mergedOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
-  plugins: { legend: { labels: { color: 'rgba(0,0,0,0.6)' } } },
+  plugins: { legend: { labels: { color: 'rgba(0,0,0,0.55)', font: { family: 'Inter', size: 12 } } } },
   ...props.options,
 }))
 </script>
 
 <style scoped>
 .chart-card {
-  background: #f4f4f8;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  position: relative;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), 0 1px 0 rgba(255,255,255,0.8) inset;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.chart-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent, #22c55e), transparent 80%);
+  border-radius: 16px 16px 0 0;
 }
 
 .chart-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 1px 0 rgba(255,255,255,0.8) inset;
 }
 
 .card-header {
@@ -59,11 +72,11 @@ const mergedOptions = computed(() => ({
 }
 
 .card-title {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(0, 0, 0, 0.45);
+  letter-spacing: 0.09em;
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .live-dot {
@@ -106,18 +119,11 @@ const mergedOptions = computed(() => ({
 }
 
 @media (max-width: 1024px) {
-  .chart-body {
-    height: 180px;
-  }
+  .chart-body { height: 180px; }
 }
 
 @media (max-width: 640px) {
-  .chart-card {
-    padding: 16px;
-  }
-
-  .chart-body {
-    height: 160px;
-  }
+  .chart-card { padding: 16px; }
+  .chart-body { height: 160px; }
 }
 </style>

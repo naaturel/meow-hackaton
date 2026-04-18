@@ -87,7 +87,7 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
   transform: translateX(-50%);
   width: 700px;
   height: 400px;
-  background: radial-gradient(ellipse, rgba(6, 182, 212, 0.18) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(6, 182, 212, 0.28) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -124,7 +124,6 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
   padding: 0 28px 28px;
 }
 
-.grid :deep(.chart-card) {
-  border-left: 3px solid #06b6d4;
+.grid :deep(.chart-card) {
 }
 </style>

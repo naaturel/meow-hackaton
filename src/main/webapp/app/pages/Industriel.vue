@@ -125,7 +125,6 @@ const currentFonctionnement = computed(() => buildHistoricalData(fonctionnementD
   padding: 0 28px 28px;
 }
 
-.grid :deep(.chart-card) {
-  border-left: 3px solid #94a3b8;
+.grid :deep(.chart-card) {
 }
 </style>
