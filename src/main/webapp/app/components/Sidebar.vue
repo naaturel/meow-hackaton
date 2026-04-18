@@ -12,17 +12,17 @@
       <div class="sidebar-header">Dashboard</div>
 
       <div class="nav-section-label">Energie</div>
-      <RouterLink to="/electricite" class="nav-link" @click="close">Electricite</RouterLink>
-      <RouterLink to="/gaz" class="nav-link" @click="close">Gaz</RouterLink>
-      <RouterLink to="/temperature" class="nav-link" @click="close">Temperature</RouterLink>
+      <RouterLink to="/electricite" class="nav-link" @click="close"><span class="nav-icon">⚡</span>Electricite</RouterLink>
+      <RouterLink to="/gaz" class="nav-link" @click="close"><span class="nav-icon">🔥</span>Gaz</RouterLink>
+      <RouterLink to="/temperature" class="nav-link" @click="close"><span class="nav-icon">🌡️</span>Temperature</RouterLink>
 
       <div class="nav-section-label">Environnement</div>
-      <RouterLink to="/eau" class="nav-link" @click="close">Eau</RouterLink>
-      <RouterLink to="/vent" class="nav-link" @click="close">Vent</RouterLink>
-      <RouterLink to="/air" class="nav-link" @click="close">Qualite de l'air</RouterLink>
+      <RouterLink to="/eau" class="nav-link" @click="close"><span class="nav-icon">💧</span>Eau</RouterLink>
+      <RouterLink to="/vent" class="nav-link" @click="close"><span class="nav-icon">💨</span>Vent</RouterLink>
+      <RouterLink to="/air" class="nav-link" @click="close"><span class="nav-icon">🌿</span>Qualite de l'air</RouterLink>
 
       <div class="nav-section-label">Production</div>
-      <RouterLink to="/industriel" class="nav-link" @click="close">Capteurs industriels</RouterLink>
+      <RouterLink to="/industriel" class="nav-link" @click="close"><span class="nav-icon">⚙️</span>Capteurs industriels</RouterLink>
     </nav>
   </div>
 </template>
@@ -119,8 +119,14 @@ const close = () => isOpen.value = false
   color: rgba(255, 255, 255, 0.35);
 }
 
+.nav-icon {
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
 .nav-link {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 11px 20px;
   color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
