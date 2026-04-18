@@ -19,11 +19,11 @@
       <div class="nav-body">
         <div class="nav-section">
           <div class="nav-section-label">Énergie</div>
-          <RouterLink to="/electricite" class="nav-link" @click="close">
+          <RouterLink to="/electricite" class="nav-link" @click="handleNavClick('/electricite')">
             <span class="dot" style="background:#f59e0b"></span>
             <span>Électricité</span>
           </RouterLink>
-          <RouterLink to="/gaz" class="nav-link" @click="close">
+          <RouterLink to="/gaz" class="nav-link" @click="handleNavClick('/gaz')">
             <span class="dot" style="background:#8b5cf6"></span>
             <span>Gaz</span>
           </RouterLink>
@@ -35,11 +35,11 @@
 
         <div class="nav-section">
           <div class="nav-section-label">Environnement</div>
-          <RouterLink to="/eau" class="nav-link" @click="close">
+          <RouterLink to="/eau" class="nav-link" @click="handleNavClick('/eau')">
             <span class="dot" style="background:#3b82f6"></span>
             <span>Eau</span>
           </RouterLink>
-          <RouterLink to="/vent" class="nav-link" @click="close">
+          <RouterLink to="/vent" class="nav-link" @click="handleNavClick('/vent')">
             <span class="dot" style="background:#06b6d4"></span>
             <span>Vent</span>
           </RouterLink>
@@ -58,6 +58,14 @@
         </div>
       </div>
     </nav>
+
+    <!-- Meme Security Overlay -->
+    <Teleport to="body">
+      <div v-if="activeVideo" class="meme-overlay" @click="closeVideo">
+        <video :src="activeVideo" autoplay loop playsinline class="meme-video" @click.stop />
+        <button class="meme-close" @click="closeVideo">✕</button>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -65,8 +73,32 @@
 import { ref } from 'vue'
 
 const isOpen = ref(false)
-const toggle = () => isOpen.value = !isOpen.value
-const close = () => isOpen.value = false
+const toggle = () => (isOpen.value = !isOpen.value)
+const close = () => (isOpen.value = false)
+
+// Meme Security
+const videoMap = {
+  '/eau':        '/content/videos/pikachu.mp4',
+  '/electricite':'/content/videos/pikachu.mp4',
+  '/vent':       '/content/videos/vent.mp4',
+  '/gaz':        '/content/videos/gaz.mp4',
+}
+
+const clickCounts = ref({})
+const activeVideo = ref(null)
+
+function handleNavClick(route) {
+  close()
+  clickCounts.value[route] = (clickCounts.value[route] || 0) + 1
+  if (clickCounts.value[route] >= 6 && videoMap[route]) {
+    activeVideo.value = videoMap[route]
+    clickCounts.value[route] = 0
+  }
+}
+
+function closeVideo() {
+  activeVideo.value = null
+}
 </script>
 
 <style scoped>
@@ -238,5 +270,42 @@ const close = () => isOpen.value = false
     padding: 13px 16px;
     font-size: 1rem;
   }
+}
+
+/* Meme Security */
+.meme-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meme-video {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
+
+.meme-close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10000;
+  transition: background 0.15s;
+}
+
+.meme-close:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 </style>
