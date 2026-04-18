@@ -105,7 +105,7 @@ mqtt:
     plain: tcp://hackathon.finemeca.com:1883
     secure: tcp://hackathon.finemeca.com:8883
 
-  client-id: "hackaton-api"
+  client-id: "hackaton-api-2"
   username: ""
   password: ""
 
