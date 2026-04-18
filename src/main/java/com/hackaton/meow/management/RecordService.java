@@ -24,52 +24,44 @@ public class RecordService {
     public List<Record> getWater(OffsetDateTime start, OffsetDateTime end, int size) {
 
         Pageable pageable = PageRequest.of(0, size, Sort.by("time").descending());
-        return repository.findByTimeBetween(start, end, pageable)
-            .getContent()
-            .stream()
-            .filter(r -> isWater(r.getDevEui()))
-            .toList();
+        return repository.findByTimeBetweenAndDevEuiIn(start, end, getWaterEui(), pageable).getContent();
     }
 
     public List<Record> getGaz(OffsetDateTime start, OffsetDateTime end, int size){
         Pageable pageable = PageRequest.of(0, size, Sort.by("time").descending());
-        return repository.findByTimeBetween(start, end, pageable)
-            .getContent()
-            .stream()
-            .filter(r -> isGaz(r.getDevEui()))
-            .toList();
+        return repository.findByTimeBetweenAndDevEuiIn(start, end, getGazEui(), pageable).getContent();
     }
 
     public List<Record> getElectricity(OffsetDateTime start, OffsetDateTime end, int size){
         Pageable pageable = PageRequest.of(0, size, Sort.by("time").descending());
-        return repository.findByTimeBetween(start, end, pageable)
-            .getContent()
-            .stream()
-            .filter(r -> isElectricity(r.getDevEui()))
-            .toList();
+        return repository.findByTimeBetweenAndDevEuiIn(start, end, getElectricity(), pageable).getContent();
     }
 
-    private boolean isGaz(String id){
-        return id.equalsIgnoreCase("a84041bc185f4796");
+    private List<String> getGazEui(){
+        return List.of(
+            "a84041bc185f4796"
+        );
     }
 
-    private boolean isWater(String id){
-        return id.equalsIgnoreCase("a840410e818855bf")
-            || id.equalsIgnoreCase("a84041e4018855c2")
-            || id.equalsIgnoreCase("a8404102e18855bc")
-            || id.equalsIgnoreCase("a840417df18860ac")
-            || id.equalsIgnoreCase("a8404152d35d680a")
-            || id.equalsIgnoreCase("a84041f09188609e");
+    private List<String> getWaterEui(){
+        return List.of(
+            "a840410e818855bf",
+            "a84041e4018855c2",
+            "a8404102e18855bc",
+            "a840417df18860ac",
+            "a8404152d35d680a",
+            "a84041f09188609e"
+        );
     }
 
-    private boolean isElectricity(String id){
-        return id.equalsIgnoreCase("102ceffffe0111a7")
-            || id.equalsIgnoreCase("102ceffffe0111e4")
-            || id.equalsIgnoreCase("102ceffffe011102b")
-            || id.equalsIgnoreCase("102ceffffe011026")
-            || id.equalsIgnoreCase("102ceffffe0111c0")
-            || id.equalsIgnoreCase("102ceffffe011134");
+    private List<String> getElectricity(){
+        return List.of(
+            "102ceffffe0111a7",
+            "102ceffffe0111e4",
+            "102ceffffe011102b",
+            "102ceffffe011026",
+            "102ceffffe0111c0",
+            "102ceffffe011134"
+        );
     }
-
-
 }
