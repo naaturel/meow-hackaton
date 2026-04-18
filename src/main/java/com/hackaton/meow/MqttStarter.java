@@ -1,14 +1,17 @@
 package com.hackaton.meow;
 
+import com.google.gson.reflect.TypeToken;
 import com.hackaton.meow.domain.exceptions.ServiceException;
 import com.hackaton.meow.domain.utils.Logger;
 import com.hackaton.meow.management.MqttService;
+import com.hackaton.meow.management.SSEService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -16,9 +19,11 @@ import java.util.Map;
 public class MqttStarter {
 
     private final MqttService mqttService;
+    private final SSEService sseService;
 
-    public MqttStarter(MqttService mqttService){
+    public MqttStarter(MqttService mqttService, SSEService sseService) {
         this.mqttService = mqttService;
+        this.sseService = sseService;
     }
 
     @PostConstruct
@@ -49,9 +54,9 @@ public class MqttStarter {
 
         mqttService.onMessageReceived((msg) -> {
             Logger.displayInfo("Received message on topic " + msg.getTopic() + ": " + msg.getContent());
-            String[] topicParts = msg.getTopic().split("/");
-            String clientId = topicParts[2];
-            Map<String, Object> map = new ObjectMapper().readValue(msg.getContent(), new TypeReference<>() {});
+            Type type = new TypeToken<Map<String, Object>>(){}.getType();
+            Map<String, Object> obj = msg.getObject(type, "object");
+            sseService.broadcast("Message received");
         });
 
         mqttService.registerCallback();
