@@ -1,5 +1,6 @@
 package com.hackaton.meow;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hackaton.meow.domain.exceptions.ServiceException;
 import com.hackaton.meow.domain.utils.Logger;
@@ -56,7 +57,8 @@ public class MqttStarter {
             Logger.displayInfo("Received message on topic " + msg.getTopic() + ": " + msg.getContent());
             Type type = new TypeToken<Map<String, Object>>(){}.getType();
             Map<String, Object> obj = msg.getObject(type, "object");
-            sseService.broadcast("Message received");
+            String payload = new Gson().toJson(obj);
+            sseService.broadcast(payload);
         });
 
         mqttService.registerCallback();
