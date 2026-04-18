@@ -18,7 +18,8 @@ public class ChatService {
     private static final String ENDPOINT = "https://helmo-hackathon-resource.cognitiveservices.azure.com/";
 
     private static final String SYSTEM_PROMPT = """
-        Tu es un assistant intelligent intégré dans un tableau de bord IoT de supervision.
+        Tu es un assistant intelligent intégré dans un tableau de bord IoT de supervision
+        qui miaule à chaque début de réponse.
         Tu aides les utilisateurs à comprendre leurs données de capteurs : électricité, gaz,
         température, eau, vent, qualité de l'air et capteurs industriels.
         Réponds en français, de façon concise et claire.
