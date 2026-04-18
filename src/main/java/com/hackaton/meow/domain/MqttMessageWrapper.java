@@ -30,6 +30,10 @@ public class MqttMessageWrapper {
         return topic;
     }
 
+    public Map<String, Object> getDeserialized() {
+        return this.deserialized;
+    }
+
     public <T> T getObject(Class<T> clazz, String key) {
         return clazz.cast(deserialized.get(key));
     }

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.hackaton.meow.domain.exceptions.ServiceException;
 import com.hackaton.meow.domain.utils.Logger;
 import com.hackaton.meow.management.MqttService;
+import com.hackaton.meow.management.PayloadService;
 import com.hackaton.meow.management.SSEService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -19,10 +20,12 @@ public class MqttStarter {
 
     private final MqttService mqttService;
     private final SSEService sseService;
+    private final PayloadService payloadService;
 
-    public MqttStarter(MqttService mqttService, SSEService sseService) {
+    public MqttStarter(MqttService mqttService, SSEService sseService, PayloadService payloadService) {
         this.mqttService = mqttService;
         this.sseService = sseService;
+        this.payloadService = payloadService;
     }
 
     @PostConstruct
@@ -53,9 +56,8 @@ public class MqttStarter {
 
         mqttService.onMessageReceived((msg) -> {
             Logger.displayInfo("Received message on topic " + msg.getTopic() + ": " + msg.getContent());
-            Type type = new TypeToken<Map<String, Object>>(){}.getType();
-            Map<String, Object> obj = msg.getObject(type, "object");
-            String payload = new Gson().toJson(obj);
+
+            String payload = payloadService.getPayload(msg);
             sseService.broadcast(payload);
         });
 
