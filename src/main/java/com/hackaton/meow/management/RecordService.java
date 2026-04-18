@@ -1,7 +1,15 @@
 package com.hackaton.meow.management;
+import com.hackaton.meow.domain.Record;
 import com.hackaton.meow.repo.RecordRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @Service
 public class RecordService {
@@ -13,10 +21,33 @@ public class RecordService {
         this.repository = repository;
     }
 
-    public String getAir(){
-        return null;
+    public List<Record> getWater(OffsetDateTime start, OffsetDateTime end, int size) {
+
+        Pageable pageable = PageRequest.of(0, size, Sort.by("time").descending());
+        return repository.findByTimeBetween(start, end, pageable)
+            .getContent()
+            .stream()
+            .filter(r -> isWater(r.getDevEui()))
+            .toList();
     }
 
+    public List<Record> getGaz(OffsetDateTime start, OffsetDateTime end, int size){
+        Pageable pageable = PageRequest.of(0, size, Sort.by("time").descending());
+        return repository.findByTimeBetween(start, end, pageable)
+            .getContent()
+            .stream()
+            .filter(r -> isGaz(r.getDevEui()))
+            .toList();
+    }
+
+    public List<Record> getElectricity(OffsetDateTime start, OffsetDateTime end, int size){
+        Pageable pageable = PageRequest.of(0, size, Sort.by("time").descending());
+        return repository.findByTimeBetween(start, end, pageable)
+            .getContent()
+            .stream()
+            .filter(r -> isElectricity(r.getDevEui()))
+            .toList();
+    }
 
     private boolean isGaz(String id){
         return id.equalsIgnoreCase("a84041bc185f4796");

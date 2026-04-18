@@ -1,16 +1,15 @@
 package com.hackaton.meow.repo;
 
 import com.hackaton.meow.domain.Record;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface RecordRepo extends JpaRepository<Record, Long> {
-    List<Record> findByDeviceName(String name);
-    List<Record> findByTimeBetween(OffsetDateTime start, OffsetDateTime end);
-
+    Page<Record> findByTimeBetween(OffsetDateTime start, OffsetDateTime end, Pageable pageable);
 }
