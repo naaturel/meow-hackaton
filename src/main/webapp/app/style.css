@@ -32,14 +32,14 @@ body {
   margin-top: 6px !important;
 }
 
-/* ── Halo rework : décalé haut-gauche, plus subtil ── */
-.page::before {
-  top: -80px !important;
-  left: -120px !important;
+/* ── Halo : overflow visible + aligné à gauche derrière le titre ── */
+.page {
+  overflow: visible !important;
+}
+[class*="theme-"]::before {
+  left: -80px !important;
   transform: none !important;
-  width: 520px !important;
-  height: 300px !important;
-  opacity: 0.55 !important;
+  opacity: 0.4 !important;
 }
 
 /* ── KPI row ── */
