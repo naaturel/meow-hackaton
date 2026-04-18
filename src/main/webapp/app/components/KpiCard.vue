@@ -1,6 +1,8 @@
 <template>
   <div class="kpi-card">
-    <div class="kpi-label">{{ label }}</div>
+    <div class="kpi-top">
+      <div class="kpi-label">{{ label }}</div>
+    </div>
     <div class="kpi-value">
       {{ value }}<span v-if="unit" class="kpi-unit">{{ unit }}</span>
     </div>
@@ -38,17 +40,17 @@ defineProps({
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.kpi-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent, #22c55e), transparent 70%);
-}
 
 .kpi-card:hover {
   transform: translateY(-2px);
   background: rgba(255, 255, 255, 0.07);
+}
+
+.kpi-top {
+  background: linear-gradient(to right, color-mix(in srgb, var(--accent, #22c55e) 10%, transparent), transparent 70%);
+  margin: -18px -22px 0;
+  padding: 12px 22px 10px;
+  border-radius: 13px 13px 0 0;
 }
 
 .kpi-label {
