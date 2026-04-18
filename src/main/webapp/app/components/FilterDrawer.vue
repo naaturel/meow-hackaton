@@ -210,8 +210,6 @@ function onHandleClick() {
   display: flex;
   align-items: center;
   gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .control-group {
