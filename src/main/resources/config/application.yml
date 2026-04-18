@@ -17,26 +17,13 @@
 ---
 # Conditionally disable springdoc on missing api-docs profile
 spring:
-  application:
-    name: meow
-  datasource:
-    url: jdbc:postgresql://hackathon.finemeca.com:5432/chirpstack_integration
-    username: hackathon
-    password: hackathon2026
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-  docker:
-    compose:
-      enabled: true
-      lifecycle-management: start-only
-      file: src/main/docker/mongodb.yml
-
+  config:
+    activate:
+      on-profile: '!api-docs'
+springdoc:
+  api-docs:
+    enabled: false
 ---
-
 feign:
   circuitbreaker:
     enabled: true
@@ -118,7 +105,7 @@ mqtt:
     plain: tcp://hackathon.finemeca.com:1883
     secure: tcp://hackathon.finemeca.com:8883
 
-  client-id: "hackaton-api-1"
+  client-id: "hackaton-api-2"
   username: ""
   password: ""
 

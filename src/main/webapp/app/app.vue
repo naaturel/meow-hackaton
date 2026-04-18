@@ -14,9 +14,15 @@
 </template>
 
 <script setup>
+import { onMounted, onBeforeUnmount } from 'vue'
 import Sidebar from './components/Sidebar.vue'
 import FilterDrawer from './components/FilterDrawer.vue'
 import ChatBot from './components/ChatBot.vue'
+import { useRealtimeStore } from './stores/realtime.js'
+
+const realtime = useRealtimeStore()
+onMounted(() => realtime.connect())
+onBeforeUnmount(() => realtime.disconnect())
 </script>
 
 <style scoped>
