@@ -4,28 +4,14 @@
       <span class="card-title">{{ title }}</span>
       <span class="live-dot"></span>
     </div>
-    <div class="metric-row">
-      <span class="metric-value">—</span>
-      <span class="metric-badge trend-up">↑ —%</span>
-    </div>
-    <div class="chart-area">
-      <div class="bars">
-        <div class="bar" v-for="h in barHeights" :key="h.id" :style="{ height: h.pct + '%' }"></div>
-      </div>
-      <div class="chart-line"></div>
+    <div class="chart-slot">
+      <slot />
     </div>
   </div>
 </template>
 
 <script setup>
 defineProps({ title: String })
-
-const barHeights = [
-  { id: 1, pct: 45 }, { id: 2, pct: 62 }, { id: 3, pct: 38 },
-  { id: 4, pct: 75 }, { id: 5, pct: 55 }, { id: 6, pct: 83 },
-  { id: 7, pct: 60 }, { id: 8, pct: 70 }, { id: 9, pct: 48 },
-  { id: 10, pct: 90 }, { id: 11, pct: 65 }, { id: 12, pct: 78 },
-]
 </script>
 
 <style scoped>
@@ -39,7 +25,6 @@ const barHeights = [
   gap: 14px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: default;
 }
 
 .chart-card:hover {
@@ -75,68 +60,8 @@ const barHeights = [
   50% { opacity: 0.3; }
 }
 
-.metric-row {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.metric-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-.metric-badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 20px;
-}
-
-.trend-up {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
-}
-
-.chart-area {
+.chart-slot {
   flex: 1;
-  min-height: 100px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 90px;
-  padding-bottom: 1px;
-}
-
-.bar {
-  flex: 1;
-  border-radius: 3px 3px 0 0;
-  background: var(--accent, rgba(255, 255, 255, 0.15));
-  opacity: 0.35;
-  transition: opacity 0.2s;
-}
-
-.chart-card:hover .bar {
-  opacity: 0.55;
-}
-
-.bar:last-child {
-  opacity: 0.9;
-}
-
-.chart-line {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  width: 100%;
+  min-height: 160px;
 }
 </style>
