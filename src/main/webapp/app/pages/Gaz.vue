@@ -17,6 +17,7 @@
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
 
@@ -55,10 +56,13 @@ const evolutionData = {
   mois:    { labels: LABELS.mois,    datasets: [{ label: 'm³', data: [40000,36000,30000,20000,12000,7500,6000,6500,13000,24000,33000,42000], backgroundColor:'#7c3aed', borderRadius:6 }] },
 }
 
-const currentConsommation = computed(() => consommationData[filterStore.selectedPeriod])
-const currentPression     = computed(() => pressionData[filterStore.selectedPeriod])
-const currentRepartition  = computed(() => repartitionData[filterStore.selectedPeriod])
-const currentEvolution    = computed(() => evolutionData[filterStore.selectedPeriod])
+const p = () => filterStore.selectedPeriod
+const h = () => filterStore.historyLevels
+
+const currentConsommation = computed(() => buildHistoricalData(consommationData[p()], h(), p(), 'line'))
+const currentPression     = computed(() => buildHistoricalData(pressionData[p()],     h(), p(), 'line'))
+const currentRepartition  = computed(() => buildHistoricalData(repartitionData[p()],  h(), p(), 'doughnut'))
+const currentEvolution    = computed(() => buildHistoricalData(evolutionData[p()],    h(), p(), 'bar'))
 </script>
 
 <style scoped>

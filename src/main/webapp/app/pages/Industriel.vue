@@ -17,6 +17,7 @@
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
 
@@ -56,10 +57,13 @@ const fonctionnementData = {
   mois:    { labels: ['En marche','Maintenance','Arrêt','Veille'], datasets: [{ data:[68,12,6,14], backgroundColor:['#44403c','#78716c','#ef4444','#a8a29e'], borderWidth:0 }] },
 }
 
-const currentCharge          = computed(() => chargeData[filterStore.selectedPeriod])
-const currentAlertes         = computed(() => alertesData[filterStore.selectedPeriod])
-const currentVibrations      = computed(() => vibrationsData[filterStore.selectedPeriod])
-const currentFonctionnement  = computed(() => fonctionnementData[filterStore.selectedPeriod])
+const p = () => filterStore.selectedPeriod
+const h = () => filterStore.historyLevels
+
+const currentCharge         = computed(() => buildHistoricalData(chargeData[p()],         h(), p(), 'bar'))
+const currentAlertes        = computed(() => buildHistoricalData(alertesData[p()],        h(), p(), 'bar'))
+const currentVibrations     = computed(() => buildHistoricalData(vibrationsData[p()],     h(), p(), 'line'))
+const currentFonctionnement = computed(() => buildHistoricalData(fonctionnementData[p()], h(), p(), 'doughnut'))
 </script>
 
 <style scoped>

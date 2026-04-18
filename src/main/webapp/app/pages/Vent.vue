@@ -17,6 +17,7 @@
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
 
@@ -55,10 +56,13 @@ const evolutionData = {
   mois:    { labels: LABELS.mois,    datasets: [{ label: 'km/h', data: [36,33,28,23,18,16,14,15,20,26,31,38], borderColor:'#38bdf8', backgroundColor:'rgba(56,189,248,0.1)', fill:true, tension:0.4 }] },
 }
 
-const currentVitesse   = computed(() => vitesseData[filterStore.selectedPeriod])
-const currentDirection = computed(() => directionData[filterStore.selectedPeriod])
-const currentRafales   = computed(() => rafalesData[filterStore.selectedPeriod])
-const currentEvolution = computed(() => evolutionData[filterStore.selectedPeriod])
+const p = () => filterStore.selectedPeriod
+const h = () => filterStore.historyLevels
+
+const currentVitesse   = computed(() => buildHistoricalData(vitesseData[p()],   h(), p(), 'line'))
+const currentDirection = computed(() => buildHistoricalData(directionData[p()], h(), p(), 'doughnut'))
+const currentRafales   = computed(() => buildHistoricalData(rafalesData[p()],   h(), p(), 'bar'))
+const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], h(), p(), 'line'))
 </script>
 
 <style scoped>

@@ -17,6 +17,7 @@
 import { computed } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import { useFilterStore } from '../stores/filter.js'
+import { buildHistoricalData } from '../composables/useChartHistory.js'
 
 const filterStore = useFilterStore()
 
@@ -56,10 +57,13 @@ const historiqueData = {
   mois:    { labels: LABELS.mois,    datasets: [{ label: '°C', data: [2,3,7,11,16,20,23,22,18,13,7,3], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.1)', fill:true, tension:0.4 }] },
 }
 
-const currentMoyenne    = computed(() => moyenneData[filterStore.selectedPeriod])
-const currentZones      = computed(() => zonesData[filterStore.selectedPeriod])
-const currentEcarts     = computed(() => ecartsData[filterStore.selectedPeriod])
-const currentHistorique = computed(() => historiqueData[filterStore.selectedPeriod])
+const p = () => filterStore.selectedPeriod
+const h = () => filterStore.historyLevels
+
+const currentMoyenne    = computed(() => buildHistoricalData(moyenneData[p()],    h(), p(), 'line'))
+const currentZones      = computed(() => buildHistoricalData(zonesData[p()],      h(), p(), 'bar'))
+const currentEcarts     = computed(() => buildHistoricalData(ecartsData[p()],     h(), p(), 'bar'))
+const currentHistorique = computed(() => buildHistoricalData(historiqueData[p()], h(), p(), 'line'))
 </script>
 
 <style scoped>

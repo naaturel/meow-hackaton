@@ -10,17 +10,39 @@
     </div>
 
     <div class="panel">
-      <p class="panel-label">Période</p>
-      <div class="period-buttons">
-        <button
-          v-for="p in periods"
-          :key="p.value"
-          class="period-btn"
-          :class="{ active: filterStore.selectedPeriod === p.value }"
-          @click="filterStore.setPeriod(p.value)"
-        >
-          {{ p.label }}
-        </button>
+      <div class="controls">
+        <div class="control-group">
+          <p class="group-label">Période</p>
+          <div class="btn-row">
+            <button
+              v-for="p in periods"
+              :key="p.value"
+              class="ctrl-btn"
+              :class="{ active: filterStore.selectedPeriod === p.value }"
+              @click="filterStore.setPeriod(p.value)"
+            >
+              {{ p.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="divider" />
+
+        <div class="control-group">
+          <p class="group-label">Historique</p>
+          <div class="btn-row">
+            <button
+              v-for="n in [1, 2, 3, 4]"
+              :key="n"
+              class="ctrl-btn history-btn"
+              :class="{ active: filterStore.historyLevels === n }"
+              @click="filterStore.setHistoryLevels(n)"
+              :title="historyTitles[n - 1]"
+            >
+              {{ n }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -36,10 +58,17 @@ const filterStore = useFilterStore()
 const isOpen = ref(false)
 
 const periods = [
-  { value: 'heure', label: 'Heure' },
-  { value: 'jour', label: 'Jour' },
+  { value: 'heure',   label: 'Heure' },
+  { value: 'jour',    label: 'Jour' },
   { value: 'semaine', label: 'Semaine' },
-  { value: 'mois', label: 'Mois' },
+  { value: 'mois',    label: 'Mois' },
+]
+
+const historyTitles = [
+  'Période actuelle uniquement',
+  'Actuel + période précédente',
+  'Actuel + 2 périodes précédentes',
+  'Actuel + 3 périodes précédentes',
 ]
 
 let dragStartY = 0
@@ -125,8 +154,7 @@ function onHandleClick() {
   overflow: hidden;
   transition: max-height 0.3s ease, padding 0.3s ease;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
 }
 
 .drawer.open .panel {
@@ -134,8 +162,21 @@ function onHandleClick() {
   padding: 16px 24px;
 }
 
-.panel-label {
-  margin: 0 0 10px;
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-label {
+  margin: 0;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -143,13 +184,19 @@ function onHandleClick() {
   color: rgba(255, 255, 255, 0.4);
 }
 
-.period-buttons {
+.btn-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
-.period-btn {
-  padding: 6px 18px;
+.divider {
+  width: 1px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.ctrl-btn {
+  padding: 6px 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   background: transparent;
@@ -159,16 +206,22 @@ function onHandleClick() {
   transition: all 0.15s ease;
 }
 
-.period-btn:hover {
+.ctrl-btn:hover {
   border-color: rgba(255, 255, 255, 0.5);
   color: #fff;
 }
 
-.period-btn.active {
+.ctrl-btn.active {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.7);
   color: #fff;
   font-weight: 600;
+}
+
+.history-btn {
+  padding: 6px 12px;
+  min-width: 36px;
+  text-align: center;
 }
 
 .backdrop {
