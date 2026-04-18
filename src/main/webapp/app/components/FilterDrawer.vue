@@ -120,68 +120,74 @@ function onHandleClick() {
 }
 
 .handle {
-  height: 36px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   pointer-events: all;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 15, 26, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   user-select: none;
-}
-
-.handle-pill {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.4);
   transition: background 0.2s;
 }
 
+.handle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.handle-pill {
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0.2s, width 0.2s;
+}
+
 .handle:hover .handle-pill {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.55);
+  width: 52px;
 }
 
 .panel {
-  background: rgba(20, 20, 30, 0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(13, 13, 22, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   padding: 0 24px;
   pointer-events: all;
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   justify-content: center;
 }
 
 .drawer.open .panel {
   max-height: 120px;
-  padding: 16px 24px;
+  padding: 18px 24px;
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .group-label {
   margin: 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .btn-row {
@@ -191,36 +197,39 @@ function onHandleClick() {
 
 .divider {
   width: 1px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.15);
+  height: 52px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .ctrl-btn {
   padding: 6px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+  font-family: inherit;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ctrl-btn:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .ctrl-btn.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.7);
-  color: #fff;
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.6);
+  color: #a5b4fc;
   font-weight: 600;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
 }
 
 .history-btn {
   padding: 6px 12px;
-  min-width: 36px;
+  min-width: 38px;
   text-align: center;
 }
 
