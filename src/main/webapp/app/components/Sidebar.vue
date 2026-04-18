@@ -68,10 +68,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 
 const isOpen = ref(false)
-onMounted(() => { if (window.innerWidth >= 1024) isOpen.value = true })
 const toggle = () => isOpen.value = !isOpen.value
 const close = () => isOpen.value = false
 </script>
