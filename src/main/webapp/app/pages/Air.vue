@@ -1,7 +1,7 @@
 <template>
   <div class="page theme-air">
     <div class="page-header">
-      <h2 class="page-title">🌿 Qualité de l'air</h2>
+      <h2 class="page-title">Qualité de l'air</h2>
       <p class="page-subtitle">Particules, CO2 et indice de qualité</p>
     </div>
     <div class="grid">
@@ -102,7 +102,11 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
   font-weight: 700;
   color: #22c55e;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; box-shadow: 0 0 8px rgba(34,197,94,0.6); }
 
 .page-subtitle {
   margin: 0;

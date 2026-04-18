@@ -1,7 +1,7 @@
 <template>
   <div class="page theme-vent">
     <div class="page-header">
-      <h2 class="page-title">💨 Vent</h2>
+      <h2 class="page-title">Vent</h2>
       <p class="page-subtitle">Vitesse, direction et rafales</p>
     </div>
     <div class="grid">
@@ -102,7 +102,11 @@ const currentEvolution = computed(() => buildHistoricalData(evolutionData[p()], 
   font-weight: 700;
   color: #06b6d4;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #06b6d4; flex-shrink: 0; box-shadow: 0 0 8px rgba(6,182,212,0.6); }
 
 .page-subtitle {
   margin: 0;

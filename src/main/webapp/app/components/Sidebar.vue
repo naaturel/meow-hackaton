@@ -20,15 +20,15 @@
         <div class="nav-section">
           <div class="nav-section-label">Énergie</div>
           <RouterLink to="/electricite" class="nav-link" @click="close">
-            <span class="nav-icon">⚡</span>
+            <span class="dot" style="background:#f59e0b"></span>
             <span>Électricité</span>
           </RouterLink>
           <RouterLink to="/gaz" class="nav-link" @click="close">
-            <span class="nav-icon">🔥</span>
+            <span class="dot" style="background:#8b5cf6"></span>
             <span>Gaz</span>
           </RouterLink>
           <RouterLink to="/temperature" class="nav-link" @click="close">
-            <span class="nav-icon">🌡️</span>
+            <span class="dot" style="background:#ef4444"></span>
             <span>Température</span>
           </RouterLink>
         </div>
@@ -36,15 +36,15 @@
         <div class="nav-section">
           <div class="nav-section-label">Environnement</div>
           <RouterLink to="/eau" class="nav-link" @click="close">
-            <span class="nav-icon">💧</span>
+            <span class="dot" style="background:#3b82f6"></span>
             <span>Eau</span>
           </RouterLink>
           <RouterLink to="/vent" class="nav-link" @click="close">
-            <span class="nav-icon">💨</span>
+            <span class="dot" style="background:#06b6d4"></span>
             <span>Vent</span>
           </RouterLink>
           <RouterLink to="/air" class="nav-link" @click="close">
-            <span class="nav-icon">🌿</span>
+            <span class="dot" style="background:#22c55e"></span>
             <span>Qualité de l'air</span>
           </RouterLink>
         </div>
@@ -52,7 +52,7 @@
         <div class="nav-section">
           <div class="nav-section-label">Production</div>
           <RouterLink to="/industriel" class="nav-link" @click="close">
-            <span class="nav-icon">⚙️</span>
+            <span class="dot" style="background:#94a3b8"></span>
             <span>Capteurs industriels</span>
           </RouterLink>
         </div>
@@ -210,9 +210,33 @@ const close = () => isOpen.value = false
   font-weight: 600;
 }
 
-.nav-icon {
-  font-size: 1rem;
-  line-height: 1;
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.nav-link:hover .dot,
+.nav-link.router-link-active .dot {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    width: 100vw;
+    transform: translateX(-100vw);
+  }
+
+  .hamburger.open {
+    left: calc(100vw - 52px);
+  }
+
+  .nav-link {
+    padding: 13px 16px;
+    font-size: 1rem;
+  }
 }
 </style>

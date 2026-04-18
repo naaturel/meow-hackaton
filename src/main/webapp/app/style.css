@@ -6,3 +6,30 @@ body {
   background: #13131f;
   color: #e2e2f0;
 }
+
+/* ── Tablet (≤ 1024px) ── */
+@media (max-width: 1024px) {
+  .grid {
+    gap: 14px !important;
+    padding: 0 16px 16px !important;
+  }
+  .page-header {
+    padding: 72px 16px 20px !important;
+  }
+}
+
+/* ── Mobile (≤ 640px) ── */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: unset !important;
+    gap: 12px !important;
+    padding: 0 12px 12px !important;
+  }
+  .page-header {
+    padding: 68px 12px 16px !important;
+  }
+  .page-title {
+    font-size: 1.4rem !important;
+  }
+}

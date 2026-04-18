@@ -1,7 +1,7 @@
 <template>
   <div class="page theme-industriel">
     <div class="page-header">
-      <h2 class="page-title">⚙️ Capteurs industriels</h2>
+      <h2 class="page-title">Capteurs industriels</h2>
       <p class="page-subtitle">Lignes de production et supervision usine</p>
     </div>
     <div class="grid">
@@ -103,7 +103,11 @@ const currentFonctionnement = computed(() => buildHistoricalData(fonctionnementD
   font-weight: 700;
   color: #94a3b8;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #94a3b8; flex-shrink: 0; box-shadow: 0 0 8px rgba(148,163,184,0.6); }
 
 .page-subtitle {
   margin: 0;

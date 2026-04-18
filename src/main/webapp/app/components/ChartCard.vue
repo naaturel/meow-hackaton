@@ -4,7 +4,7 @@
       <span class="card-title">{{ title }}</span>
       <span class="live-dot"></span>
     </div>
-    <div class="chart-body">
+    <div class="chart-body" :class="{ 'chart-body--doughnut': type === 'doughnut' }">
       <LineChart v-if="type === 'line'" :data="data" :options="mergedOptions" />
       <BarChart v-else-if="type === 'bar'" :data="data" :options="mergedOptions" />
       <DoughnutChart v-else-if="type === 'doughnut'" :data="data" :options="mergedOptions" />
@@ -29,27 +29,27 @@ const props = defineProps({
 const mergedOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
-  plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)' } } },
+  plugins: { legend: { labels: { color: 'rgba(0,0,0,0.6)' } } },
   ...props.options,
 }))
 </script>
 
 <style scoped>
 .chart-card {
-  background: #1a1a2e;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #f4f4f8;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .chart-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
 }
 
 .card-header {
@@ -63,7 +63,7 @@ const mergedOptions = computed(() => ({
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(0, 0, 0, 0.45);
 }
 
 .live-dot {
@@ -81,14 +81,43 @@ const mergedOptions = computed(() => ({
 }
 
 .chart-body {
-  flex: 1;
-  min-height: 180px;
   position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+.chart-body--doughnut {
+  height: 320px;
+}
+
+.chart-body :deep(div) {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.chart-body :deep(canvas) {
+  max-width: 100% !important;
 }
 
 .chart-placeholder {
   width: 100%;
   height: 100%;
   border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+  .chart-body {
+    height: 180px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-body {
+    height: 160px;
+  }
 }
 </style>

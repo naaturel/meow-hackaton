@@ -1,7 +1,7 @@
 <template>
   <div class="page theme-eau">
     <div class="page-header">
-      <h2 class="page-title">💧 Eau</h2>
+      <h2 class="page-title">Eau</h2>
       <p class="page-subtitle">Consommation et qualité de l'eau</p>
     </div>
     <div class="grid">
@@ -90,7 +90,8 @@ const currentEvolution    = computed(() => buildHistoricalData(evolutionData[p()
 }
 
 .page-header { position: relative; padding: 84px 28px 28px; }
-.page-title { margin: 0 0 4px; font-size: 1.8rem; font-weight: 700; color: #3b82f6; letter-spacing: -0.01em; }
+.page-title { margin: 0 0 4px; font-size: 1.8rem; font-weight: 700; color: #3b82f6; letter-spacing: -0.01em; display: flex; align-items: center; gap: 12px; }
+.page-title::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: #3b82f6; flex-shrink: 0; box-shadow: 0 0 8px rgba(59,130,246,0.6); }
 .page-subtitle { margin: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.45); }
 
 .grid {
