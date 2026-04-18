@@ -2,6 +2,7 @@
   <div class="app">
     <FilterDrawer />
     <Sidebar />
+    <ChatBot />
     <main class="content">
       <RouterView v-slot="{ Component }">
         <Transition name="fade" mode="out-in">
@@ -15,6 +16,7 @@
 <script setup>
 import Sidebar from './components/Sidebar.vue'
 import FilterDrawer from './components/FilterDrawer.vue'
+import ChatBot from './components/ChatBot.vue'
 </script>
 
 <style scoped>

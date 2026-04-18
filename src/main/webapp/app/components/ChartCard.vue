@@ -91,12 +91,12 @@ const mergedOptions = computed(() => ({
 
 .chart-body {
   position: relative;
-  height: 200px;
+  height: 160px;
   width: 100%;
 }
 
 .chart-body--doughnut {
-  height: 320px;
+  height: 240px;
 }
 
 .chart-body :deep(div) {
@@ -115,11 +115,11 @@ const mergedOptions = computed(() => ({
 }
 
 @media (max-width: 1024px) {
-  .chart-body { height: 180px; }
+  .chart-body { height: 140px; }
 }
 
 @media (max-width: 640px) {
   .chart-card { padding: 16px; }
-  .chart-body { height: 160px; }
+  .chart-body { height: 120px; }
 }
 </style>
