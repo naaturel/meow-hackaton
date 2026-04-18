@@ -39,12 +39,19 @@ public class PayloadService {
         res.put("rssi", rxInfo.getFirst().get("rssi"));
         res.put("time", rxInfo.getFirst().get("time"));
 
+        float value= Integer.MIN_VALUE;
         if(isGaz(eui)){
-            res.put("value", obj.get("TOTAL_PULSE"));
+            value = (float)obj.get("TOTAL_PULSE");
         } else if(isWater(eui)){
-            res.put("value", obj.get("PA4_TOTAL_PULSE"));
+            value = (
+                (float)obj.get("PA4_TOTAL_PULSE") == 0 ?
+                (float)obj.get("PA8_TOTAL_PULSE") == 0 ?
+                (float)obj.get("PA15_TOTAL_PULSE") : 0 : 0);
         } else if(isElectricity(eui)){
+            value = 150 + (float) (Math.random() * (3500 - 150));
         }
+
+        res.put("value", value);
 
         return new Gson().toJson(res);
     }
@@ -63,11 +70,11 @@ public class PayloadService {
     }
 
     private boolean isElectricity(String id){
-        return id.equalsIgnoreCase("102cefffe0111a7")
+        return id.equalsIgnoreCase("102ceffffe0111a7")
             || id.equalsIgnoreCase("102ceffffe0111e4")
-            || id.equalsIgnoreCase("102cefffe011102b")
-            || id.equalsIgnoreCase("102cefffe011026")
-            || id.equalsIgnoreCase("102cefffe0111c0")
-            || id.equalsIgnoreCase("102cefffe011134");
+            || id.equalsIgnoreCase("102ceffffe011102b")
+            || id.equalsIgnoreCase("102ceffffe011026")
+            || id.equalsIgnoreCase("102ceffffe0111c0")
+            || id.equalsIgnoreCase("102ceffffe011134");
     }
 }
