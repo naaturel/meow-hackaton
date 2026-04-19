@@ -1,12 +1,20 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import { MatrixController, MatrixElement } from 'chartjs-chart-matrix'
 
 Chart.register(...registerables, MatrixController, MatrixElement)
 
+const props = defineProps({ previewMode: { type: Boolean, default: false } })
+
 const chartRef = ref(null)
 let chartInstance = null
+
+// plain vars used inside Chart.js callbacks (not Vue reactive)
+let _inPreview = false
+let _revealCount = 0
+let _previewData = []
+let _revealTimer = null
 
 const heures = ['00h','02h','04h','06h','08h','10h','12h','14h','16h','18h','20h','22h']
 const jours  = ['Dim','Sam','Ven','Jeu','Mer','Mar','Lun']
@@ -34,6 +42,20 @@ jours.forEach((jour) => {
 const MIN_V = 35
 const MAX_V = 520
 
+function getPurpleColor(value) {
+  const ratio = Math.max(0, Math.min(1, (value - MIN_V) / (MAX_V - MIN_V)))
+  if (ratio < 0.3) {
+    const t = ratio / 0.3
+    return `rgba(${Math.round(50 + t * 50)}, ${Math.round(10 + t * 20)}, ${Math.round(90 + t * 60)}, 0.9)`
+  } else if (ratio < 0.65) {
+    const t = (ratio - 0.3) / 0.35
+    return `rgba(${Math.round(100 + t * 80)}, ${Math.round(30 + t * 40)}, ${Math.round(150 + t * 60)}, 0.92)`
+  } else {
+    const t = (ratio - 0.65) / 0.35
+    return `rgba(${Math.round(180 + t * 47)}, ${Math.round(70 + t * 69)}, ${Math.round(210 + t * 36)}, 0.95)`
+  }
+}
+
 function getAmberColor(value) {
   const ratio = Math.max(0, Math.min(1, (value - MIN_V) / (MAX_V - MIN_V)))
   if (ratio < 0.25) {
@@ -49,6 +71,36 @@ function getAmberColor(value) {
   }
 }
 
+watch(() => props.previewMode, (val) => {
+  if (!chartInstance) return
+  if (val) {
+    _previewData = matrixData.map(cell => ({
+      ...cell,
+      v: Math.round(cell.v * (0.85 + Math.random() * 0.30)),
+    }))
+    _revealCount = 0
+    _inPreview = true
+    chartInstance.data.datasets[0].data = _previewData
+    chartInstance.update('none')
+    const total = _previewData.length
+    const interval = 2800 / total
+    _revealTimer = setInterval(() => {
+      _revealCount++
+      chartInstance.update('none')
+      if (_revealCount >= total) {
+        clearInterval(_revealTimer)
+        _revealTimer = null
+      }
+    }, interval)
+  } else {
+    if (_revealTimer) { clearInterval(_revealTimer); _revealTimer = null }
+    _inPreview = false
+    _revealCount = 0
+    chartInstance.data.datasets[0].data = matrixData
+    chartInstance.update()
+  }
+})
+
 onMounted(() => {
   chartInstance = new Chart(chartRef.value, {
     type: 'matrix',
@@ -56,8 +108,14 @@ onMounted(() => {
       datasets: [{
         label: 'Consommation (kWh)',
         data: matrixData,
-        backgroundColor: (ctx) => getAmberColor(ctx.dataset.data[ctx.dataIndex]?.v ?? 0),
-        borderColor: 'rgba(255,255,255,0.85)',
+        backgroundColor: (ctx) => {
+          if (_inPreview) {
+            if (ctx.dataIndex >= _revealCount) return 'transparent'
+            return getPurpleColor(_previewData[ctx.dataIndex]?.v ?? 0)
+          }
+          return getAmberColor(ctx.dataset.data[ctx.dataIndex]?.v ?? 0)
+        },
+        borderColor: (ctx) => _inPreview ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.85)',
         borderWidth: 2,
         borderRadius: 4,
         width: (ctx) => {
@@ -121,7 +179,10 @@ onMounted(() => {
   })
 })
 
-onBeforeUnmount(() => chartInstance?.destroy())
+onBeforeUnmount(() => {
+  if (_revealTimer) clearInterval(_revealTimer)
+  chartInstance?.destroy()
+})
 </script>
 
 <template>

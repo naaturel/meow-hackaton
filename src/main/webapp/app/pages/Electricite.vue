@@ -24,12 +24,36 @@
       <SignalCard :snrValue="rt.elecLive.snr" />
     </div>
     <div class="grid">
-      <ChartCard title="Consommation totale (kWh)" type="line" :data="currentConsommation" />
-      <ChartCard title="Pic de consommation" type="bar" :data="currentPic" />
+      <ChartCard
+        title="Consommation totale (kWh)"
+        type="line"
+        :data="effectiveConsommationData"
+        :previewState="previewStates.consommation"
+        @togglePreview="handlePreview('consommation')"
+      />
+      <ChartCard
+        title="Pic de consommation"
+        type="bar"
+        :data="effectivePicData"
+        :previewState="previewStates.pic"
+        @togglePreview="handlePreview('pic')"
+      />
       <div class="heatmap-card">
         <div class="heatmap-header">
           <span class="heatmap-title">CONSOMMATION PAR HEURE &amp; JOUR</span>
-          <span class="live-dot"></span>
+          <div class="header-right">
+            <button
+              class="preview-btn"
+              :class="previewStates.heatmap"
+              :disabled="previewStates.heatmap === 'loading'"
+              @click="handlePreview('heatmap')"
+            >
+              <template v-if="previewStates.heatmap === 'idle'">Prédire</template>
+              <template v-else-if="previewStates.heatmap === 'loading'"><span class="thinking-text">Thinking</span><span class="thinking-dots">...</span></template>
+              <template v-else>Réinitialiser</template>
+            </button>
+            <span class="live-dot"></span>
+          </div>
         </div>
         <div class="heatmap-legend">
           <span class="legend-label">Faible</span>
@@ -37,7 +61,7 @@
           <span class="legend-label">Élevée</span>
         </div>
         <div class="heatmap-body">
-          <ElectriciteHeatmap />
+          <ElectriciteHeatmap :previewMode="previewStates.heatmap === 'preview'" />
         </div>
       </div>
     </div>
@@ -45,7 +69,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive, ref, onBeforeUnmount } from 'vue'
 import ChartCard from '../components/ChartCard.vue'
 import KpiCard from '../components/KpiCard.vue'
 import SignalCard from '../components/SignalCard.vue'
@@ -118,6 +142,111 @@ const h = () => filterStore.historyLevels
 
 const currentConsommation = computed(() => buildHistoricalData(consommationData[p()], h(), p(), 'line'))
 const currentPic          = computed(() => buildHistoricalData(picData[p()],          h(), p(), 'bar'))
+
+// ── Prévisualiser ──────────────────────────────────────────────────────
+const previewStates = reactive({ consommation: 'idle', pic: 'idle', heatmap: 'idle' })
+const previewData   = reactive({ consommation: null, pic: null })
+const revealIdx     = reactive({ consommation: 0, pic: 0 })
+const revealTimers  = { consommation: null, pic: null, heatmap: null }
+
+function perturbValues(arr) {
+  return arr.map(v => v === null ? null : Math.round(v * (0.85 + Math.random() * 0.30)))
+}
+
+function makePreviewLine(baseData) {
+  const ds = baseData.datasets[0]
+  return {
+    ...baseData,
+    datasets: [{
+      ...ds,
+      data: perturbValues(ds.data),
+      borderColor: '#a78bfa',
+      backgroundColor: 'rgba(167,139,250,0.15)',
+      borderDash: [7, 4],
+    }],
+  }
+}
+
+function makePreviewBar(baseData) {
+  const ds = baseData.datasets[0]
+  return {
+    ...baseData,
+    datasets: [{
+      ...ds,
+      data: perturbValues(ds.data),
+      backgroundColor: '#a78bfa',
+    }],
+  }
+}
+
+function handlePreview(key) {
+  const state = previewStates[key]
+  if (state === 'preview') {
+    // reset
+    if (revealTimers[key]) { clearInterval(revealTimers[key]); revealTimers[key] = null }
+    previewStates[key] = 'idle'
+    previewData[key] = null
+    revealIdx[key] = 0
+    return
+  }
+  if (state === 'loading') return
+
+  previewStates[key] = 'loading'
+  const delay = 3000 + Math.random() * 1000
+
+  revealTimers[key] = setTimeout(() => {
+    revealTimers[key] = null
+    if (key === 'heatmap') {
+      previewStates.heatmap = 'preview'
+      return
+    }
+    const base = key === 'consommation' ? consommationData[p()] : picData[p()]
+    const generated = key === 'consommation' ? makePreviewLine(base) : makePreviewBar(base)
+    previewData[key] = generated
+    revealIdx[key] = 0
+    previewStates[key] = 'preview'
+
+    const total = generated.datasets[0].data.length
+    const duration = 2000 + Math.random() * 2000
+    revealTimers[key] = setInterval(() => {
+      revealIdx[key]++
+      if (revealIdx[key] >= total) {
+        clearInterval(revealTimers[key])
+        revealTimers[key] = null
+      }
+    }, duration / total)
+  }, delay)
+}
+
+const effectiveConsommationData = computed(() => {
+  if (previewStates.consommation !== 'preview' || !previewData.consommation) return currentConsommation.value
+  const src = previewData.consommation
+  const visible = revealIdx.consommation
+  return {
+    ...src,
+    datasets: src.datasets.map(ds => ({
+      ...ds,
+      data: ds.data.map((v, i) => i < visible ? v : null),
+    })),
+  }
+})
+
+const effectivePicData = computed(() => {
+  if (previewStates.pic !== 'preview' || !previewData.pic) return currentPic.value
+  const src = previewData.pic
+  const visible = revealIdx.pic
+  return {
+    ...src,
+    datasets: src.datasets.map(ds => ({
+      ...ds,
+      data: ds.data.map((v, i) => i < visible ? v : null),
+    })),
+  }
+})
+
+onBeforeUnmount(() => {
+  Object.values(revealTimers).forEach(t => { if (t) clearInterval(t) })
+})
 </script>
 
 <style scoped>
@@ -194,6 +323,64 @@ const currentPic          = computed(() => buildHistoricalData(picData[p()],    
   margin: -22px -22px 0;
   padding: 14px 22px 12px;
   border-radius: 15px 15px 0 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview-btn {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+  white-space: nowrap;
+}
+
+.preview-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.7);
+}
+
+.preview-btn.loading {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.preview-btn.preview {
+  border-color: rgba(167, 139, 250, 0.5);
+  background: rgba(167, 139, 250, 0.12);
+  color: #a78bfa;
+}
+
+.preview-btn.preview:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.thinking-dots {
+  display: inline-block;
+  animation: blink-dots 1.2s steps(4, end) infinite;
+  overflow: hidden;
+  vertical-align: bottom;
+  width: 1.6em;
+}
+
+@keyframes blink-dots {
+  0%   { width: 0; }
+  33%  { width: 0.5em; }
+  66%  { width: 1em; }
+  100% { width: 1.6em; }
 }
 
 .heatmap-title {
