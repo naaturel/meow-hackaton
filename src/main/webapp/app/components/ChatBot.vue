@@ -109,8 +109,8 @@ async function scrollToBottom() {
 .chat-panel::before {
   position: absolute;
   content: '';
-  top: 42px;
-  left: -25px;
+  top: 32px;
+  left: -17px;
   width: 75px;
   height: 75px;
   transform: rotate(-15deg);
@@ -123,8 +123,8 @@ async function scrollToBottom() {
 .chat-panel::after {
   position: absolute;
   content: '';
-  top: 42px;
-  right: -30px;
+  top: 32px;
+  right: -17px;
   width: 75px;
   height: 75px;
   transform: scaleX(-1) rotate(-15deg);
