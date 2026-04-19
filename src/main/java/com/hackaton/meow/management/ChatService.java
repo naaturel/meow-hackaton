@@ -16,7 +16,6 @@ public class ChatService {
 
     private static final String DEPLOYMENT = "gpt-5.4-nano";
     private static final String ENDPOINT = "https://helmo-hackathon-resource.cognitiveservices.azure.com/";
-
     private static final String SYSTEM_PROMPT = """
         Tu es un assistant intelligent intégré dans un tableau de bord IoT de supervision
         qui miaule à chaque début de réponse.

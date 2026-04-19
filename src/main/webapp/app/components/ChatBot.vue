@@ -106,6 +106,35 @@ async function scrollToBottom() {
   gap: 12px;
 }
 
+.chat-panel::before {
+  position: absolute;
+  content: '';
+  top: 42px;
+  left: -25px;
+  width: 75px;
+  height: 75px;
+  transform: rotate(-15deg);
+  background-image: url('../../content/assets/cat-ear.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.chat-panel::after {
+  position: absolute;
+  content: '';
+  top: 42px;
+  right: -30px;
+  width: 75px;
+  height: 75px;
+  transform: scaleX(-1) rotate(-15deg);
+  background-image: url('../../content/assets/cat-ear.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
 .chat-toggle {
   width: 52px;
   height: 52px;

@@ -108,6 +108,7 @@ management:
       application: ${spring.application.name}
 
 mongock:
+  enabled : false
   migration-scan-package:
     - com.hackaton.meow.config.dbmigrations
 
